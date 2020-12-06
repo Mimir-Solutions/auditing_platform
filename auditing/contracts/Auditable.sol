@@ -167,7 +167,7 @@ contract Auditable is Ownable {
         require( _msgSender() == auditor, "Auditor only" );
 
         // Make sure that the hash has been set and that they match
-        require( contractCreationHash != address(0), "Hash has not been set" );
+        require( contractCreationHash != address(0),    "Hash has not been set" );
         require( _creationHash == contractCreationHash, "Hashes do not match" );
         
         // Auditor cannot change their mind and approve/oppose multiple times
@@ -197,7 +197,7 @@ contract Auditable is Ownable {
         // Design Flaw: Auditor and Deployer may colllude and use a different hash - cannot fix with code..?
         // TODO: Can we somehow query the blockchain with address(this) and find the hash? It's an event so probably not
         //       unless we have a client do it and call back into the contract
-        require( contractCreationHash != address(0), "Hash has not been set" );
+        require( contractCreationHash != address(0),    "Hash has not been set" );
         require( _creationHash == contractCreationHash, "Hashes do not match" );
         
         // Auditor cannot change their mind and approve/oppose multiple times
@@ -222,9 +222,9 @@ contract Auditable is Ownable {
         
         address _initiator = _msgSender();
 
-        require( _initiator == auditor || _initiator == deployer, "Auditor and Deployer only" );
-        require( audited, "Cannot destruct an unaudited contract" );
-        require( !approved, "Cannot destruct an approved contract" );
+        require( _initiator == auditor || _initiator == deployer,   "Auditor and Deployer only" );
+        require( audited,                                           "Cannot destruct an unaudited contract" );
+        require( !approved,                                         "Cannot destruct an approved contract" );
         
         IAuditingPlatform( platform ).contractDestructed( _initiator );
 

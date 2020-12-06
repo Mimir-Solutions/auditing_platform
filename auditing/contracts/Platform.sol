@@ -3,7 +3,10 @@ pragma solidity 0.7.4;
 
 import "./Pausable.sol";
 import "./IDatastore.sol";
+import "./IAuditNFT.sol";
 
+// TODO: How do you implement the completeAudit, migrateAuditor, contractDestructed via an interface? Prettu sure the caller using the interface would be the contract ...
+// TODO: Does the platform really need the same events as the store? Pointless in between?
 
 contract Platform is Pausable {
 
@@ -27,48 +30,55 @@ contract Platform is Pausable {
     /**
         @notice Event tracking whenever an auditor is added and who added them
         @param _owner The current owner of the platform
-        @param _auditor The auditor that has been added
+        @param auditor The auditor that has been added
      */
     event AuditorAdded( address indexed owner, address indexed auditor );
 
     /**
         @notice Event tracking whenever an auditor is suspended and who suspended them, will prevent the auditor from completing future audits
         @param _owner The current owner of the platform
-        @param _auditor The auditor who has been blocked for continuing to use the platform to perform audits
+        @param auditor The auditor who has been blocked for continuing to use the platform to perform audits
      */
     event AuditorSuspended( address indexed owner, address indexed auditor );
 
     /**
         @notice Event tracking whenever an auditor is reinstated and who reinstated them, will allow the auditor to complete audits again
         @param _owner The current owner of the platform
-        @param _auditor The auditor who can complete audits again
+        @param auditor The auditor who can complete audits again
      */
     event AuditorReinstated( address indexed owner, address indexed auditor );
 
     /**
         @notice Event tracking whenever an auditor has migrated themselves to the new datastore
         @param _sender Who initiated the migration
-        @param _auditor The auditor who was migrated to the lateset datastore
+        @param auditor The auditor who was migrated to the lateset datastore
         @dev when role based permissions are implemented the _sender shall become more meaningful
      */
-    event AuditorMigrated( address indexed sender,  address indexed auditor );
+    event AuditorMigrated( address indexed sender, address indexed auditor );
 
     /**
         @notice Event tracking whenever an audit is completed by an auditor indicating the contract and the result of that audit
-        @param _auditor The auditor who completed the audit
+        @param auditor The auditor who completed the audit
         @param _caller The contract that has called the completeAudit function in the platform
-        @param _contract The contract hash that is conventionally used to find the contract
-        @param _approved Bool indicating whether the auditor has approved or opposed the contract
-        @param _hash The contract creation hash
+        @param contract_ The contract hash that is conventionally used to find the contract
+        @param approved Bool indicating whether the auditor has approved or opposed the contract
+        @param hash The contract creation hash
      */
     event AuditCompleted( address indexed auditor, address caller, address indexed contract_, bool approved, string indexed hash );
     
     /**
         @notice Event tracking whenever the datastore is being swapped out
-        @param _owner The current owner of the platform
-        @param _dataStore Address meant to be a contract that stores information regarding audits
+        @param owner The current owner of the platform
+        @param dataStore Address meant to be a contract that stores information regarding audits
      */
     event ChangedDataStore( address indexed owner, address dataStore );
+    
+    /**
+     * @notice Event tracking when a contract has been destructed
+     * @param sender Initiator of the destruction
+     * @param contract_ the contract that has been destructed
+     */
+    event ContractDestructed( address indexed sender, address contract_ );
 
     /**
         @notice Event confirming that the NFT has been set when deployed
@@ -114,73 +124,71 @@ contract Platform is Pausable {
 
     /**
         @notice Adds a new entry to the datastore post audit and mints the auditor a receipt NFT
-        @param _auditor The auditor who performed the audit
+        @param auditor The auditor who performed the audit
         @param _caller The contract that has called the completeAudit function in the platform
-        @param _approved Bool indicating whether the auditor has approved or opposed the contract
-        @param _hash The contract creation hash
+        @param approved Bool indicating whether the auditor has approved or opposed the contract
+        @param hash The contract creation hash
      */
-    function completeAudit( address _auditor, address _deployer, address _contract, address _hash, bool _approved ) external whenNotPaused() {  
+    function completeAudit( address auditor, address deployer, address contract_, address hash, bool approved ) external whenNotPaused() {  
         // Current design flaw: any auditor can call this instead of the auditor who is auditing the contract
-        // TODO: restrict to auditor only by removing _auditor and using _msgSender()
+        // TODO: restrict to auditor only by removing auditor and using _msgSender() (outdated TODO)
 
-        IDatastore( dataStore ).completeAudit( _auditor, _deployer, _contract, _hash, _approved );
+        IDatastore( dataStore ).completeAudit( auditor, deployer, contract_, hash, approved );
 
-        // TODO: add the deployer into the NFT mint
         // Mint a non-fungible token for the auditor as a receipt
-        (bool _NFTSuccess, ) = NFT.call(abi.encodeWithSignature("mint(address,address,bool,bytes)", _auditor, _contract, _approved, _hash));
-        
-        require(_NFTSuccess, "Unknown error with the minting of the Audit NFT");
+        IAuditNFT( NFT ).mint( auditor, contract_, deployer, approved, hash );
 
-        emit AuditCompleted(_auditor, _msgSender(), _contract, _approved, string(_hash));
+        emit AuditCompleted( auditor, _msgSender(), contract_, approved, string( hash ) );
     }
 
     /**
         @notice Adds a new auditor to the current datastore
-        @param _auditor The auditor who has been added
+        @param auditor The auditor who has been added
      */
-    function addAuditor( address _auditor ) external onlyOwner() whenNotPaused() {
-        IDatastore( dataStore ).addAuditor( _auditor );
-        emit AuditorAdded(_msgSender(), _auditor);
+    function addAuditor( address auditor ) external onlyOwner() whenNotPaused() {
+        IDatastore( dataStore ).addAuditor( auditor );
+        emit AuditorAdded( _msgSender(), auditor );
     }
 
     /**
         @notice Prevents the auditor from performing any audits
-        @param _auditor The auditor who is suspended
+        @param auditor The auditor who is suspended
      */
-    function suspendAuditor( address _auditor ) external onlyOwner() {
-        IDatastore( dataStore ).suspendAuditor( _auditor );
-        emit AuditorSuspended(_msgSender(), _auditor);
+    function suspendAuditor( address auditor ) external onlyOwner() {
+        IDatastore( dataStore ).suspendAuditor( auditor );
+        emit AuditorSuspended( _msgSender(), auditor );
     }
 
     /**
         @notice Adds a record of a previously valid audit to the newer datastore
-        @param _auditor The auditor who is migrated
+        @param auditor The auditor who is migrated
      */
-    function migrateAuditor( address _auditor ) external {
+    function migrateAuditor( address auditor ) external {
         // In the next iteration role based permissions will be implemented
-        address _initiator = _msgSender();
-        require(_initiator == _auditor, "Cannot migrate someone else");
+        address _initiator = _msgSender();  // TODO: What if the contract calls with itself as an argument... cannot allow that
+        require( _initiator == auditor, "Cannot migrate someone else" );
 
         // Tell the data store to migrate the auditor
-        IDatastore( dataStore ).migrateAuditor( _initiator, _auditor );
-        emit AuditorMigrated(_initiator, _auditor);
+        IDatastore( dataStore ).migrateAuditor( _initiator, auditor );
+        emit AuditorMigrated( _initiator, auditor );
     }
 
-    function contractDestructed( address _sender ) external {
+    function contractDestructed( address sender ) external {
         // Design flaw: this does not ensure that the contract will be destroyed as a contract may have a function that
         // allows it to call this and falsely set the bool from false to true
         // TODO: Better to make the auditor be the _msgSender() and pass in the contract as a default argument
 
-        IDatastore( dataStore ).contractDestructed( _msgSender(), _sender );
+        IDatastore( dataStore ).contractDestructed( _msgSender(), sender );
+        emit ContractDestructed( sender, _msgSender() );
     }
 
     /**
         @notice Allows the auditor to perform audits again
-        @param _auditor The auditor who is reinstated
+        @param auditor The auditor who is reinstated
      */
-    function reinstateAuditor( address _auditor ) external onlyOwner() whenNotPaused() {
-        IDatastore( dataStore ).reinstateAuditor( _auditor );
-        emit AuditorReinstated(_msgSender(), _auditor);
+    function reinstateAuditor( address auditor ) external onlyOwner() whenNotPaused() {
+        IDatastore( dataStore ).reinstateAuditor( auditor );
+        emit AuditorReinstated( _msgSender(), auditor );
     }
 
     /**
@@ -189,7 +197,7 @@ contract Platform is Pausable {
      */
     function pauseDataStore() external onlyOwner() {
         IDatastore( dataStore ).pause();
-        emit PausedDataStore(_msgSender(), dataStore);
+        emit PausedDataStore( _msgSender(), dataStore );
     }
 
     /**
@@ -197,7 +205,7 @@ contract Platform is Pausable {
      */
     function unpauseDataStore() external onlyOwner() {
         IDatastore( dataStore ).unpause();
-        emit UnpausedDataStore(_msgSender(), dataStore);
+        emit UnpausedDataStore( _msgSender(), dataStore );
     }
 
     /**
@@ -210,6 +218,6 @@ contract Platform is Pausable {
   
         dataStore = _dataStore;
         
-        emit ChangedDataStore(_msgSender(), dataStore);
+        emit ChangedDataStore( _msgSender(), dataStore );
     }
 }
