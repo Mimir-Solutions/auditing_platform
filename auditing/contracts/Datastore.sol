@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: AGPL v3
-
-pragma solidity ^0.6.10;
+// SPDX-License-Identifier: AGPL-3.0-or-later
+pragma solidity 0.7.4;
 
 import "./Pausable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
@@ -212,3 +211,4 @@ contract Datastore is Pausable {
         emit LinkedDataStore(_msgSender(), previousDatastore);
     }
 }
+
