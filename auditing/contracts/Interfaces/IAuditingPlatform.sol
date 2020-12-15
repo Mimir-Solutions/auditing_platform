@@ -9,5 +9,7 @@ interface IAuditingPlatform {
     
     function contractDestructed( address sender ) external;
 
+    function register( address deployer, address auditor, address creationHash ) external;
+
 }
 

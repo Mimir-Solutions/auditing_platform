@@ -122,6 +122,11 @@ contract Platform is Pausable {
         emit InitializedDataStore( dataStore );
     }
 
+    function register( address deployer, address auditor, address creationHash ) external whenNotPaused() {
+        IDatastore.register( deployer, auditor, _msgSender(), creationHash );
+    }
+
+
     /**
         @notice Adds a new entry to the datastore post audit and mints the auditor a receipt NFT
         @param auditor The auditor who performed the audit
@@ -177,6 +182,26 @@ contract Platform is Pausable {
         // Design flaw: this does not ensure that the contract will be destroyed as a contract may have a function that
         // allows it to call this and falsely set the bool from false to true
         // TODO: Better to make the auditor be the _msgSender() and pass in the contract as a default argument
+        
+        /**
+         * Scenario 1: Contract is honest
+         *      Either auditor or deployer init the call and thus this function is called with them as the argument
+         *      Everything is OK
+         * 
+         * Scenario 2: Use this function directly
+         *      Implementation should force the destruct() function to call this and thus force the audited contract to call this
+         *      However, an unaccounted issue occurs and the auditor wants (or has to) directly call this function instead.
+         *      E.g. there is another selfdestruct and the auditor approves the contract but then that other function is used making
+         *      our original destruct() function obsolete since the contract is nuked at that point and thus this function could be the
+         *      saviour for the auditor ... then again it is their responsibility before they approve to not allow such things?
+         *      What about our "clean" store?
+         *      Tough shit or do we allow such an event? I want a clean store but also "do not fuck up" (probably more so).
+         * 
+         * Scenario 3: Dishonest contract
+         *      Contract function that differs from destruct() is called which passes in anyone.
+         *      If they pass in the auditor or deployer and the contract is not actually destroyed then what?
+         *      We do not want to force the destruct() function to be auditor only but that would fix this (assuming vetted + honest auditor)
+         */
 
         IDatastore( dataStore ).contractDestructed( _msgSender(), sender );
         emit ContractDestructed( sender, _msgSender() );
@@ -221,3 +246,4 @@ contract Platform is Pausable {
         emit ChangedDataStore( _msgSender(), dataStore );
     }
 }
+

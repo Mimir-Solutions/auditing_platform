@@ -26,21 +26,20 @@ contract ContractStore {
     mapping( address => uint256 ) private contractHash;
     mapping( address => uint256 ) private contractCreationHash;
 
-    // Completed audits
     event NewContractRecord(
         address indexed auditor, 
         address indexed deployer, 
         address         contract_, 
         address         hash, 
-        bool    indexed approved, 
         uint256         contractIndex
     );
 
     event ContractDestructed( address indexed sender, address contract_ );
+    event CompletedAudit( address indexed contract_, address indexed auditor, bool indexed approved );
 
     constructor() internal {}
 
-    function _saveContract( address auditor, address deployer, address contract_, address hash, bool approved ) internal returns ( uint256 ) {
+    function _saveContract( address auditor, address deployer, address contract_, address hash ) internal returns ( uint256 ) {
         require( !_hasContractRecord( contract_ ),  "Contract exists in the contracts mapping" );
         require( !_hasCreationRecord( hash ),       "Contract exists in the contract creation hash mapping" );
 
@@ -50,16 +49,8 @@ contract ContractStore {
             auditor:        auditor,
             deployer:       deployer,
             contractHash:   contract_,
-            creationHash:   hash,
-            approved:       approved, 
-            destructed:     false
+            creationHash:   hash
         });
-
-        if ( approved ) {
-            approvedContractCount = approvedContractCount.add( 1 );
-        } else {
-            opposedContractCount = opposedContractCount.add( 1 );
-        }
 
         // Start adding from the next position and thus have an empty 0th default value which indicates an error to the user
         uint256 contractCount = contracts.length;
@@ -70,8 +61,27 @@ contract ContractStore {
         contractHash[ contract_ ] = contractIndex_;
         contractCreationHash[ hash ] = contractIndex_;
 
-        emit NewContractRecord( auditor, deployer, contract_, hash, approved, contractIndex_ );
+        emit NewContractRecord( auditor, deployer, contract_, hash, contractIndex_ );
         return contractIndex_;
+    }
+    
+    function completeAudit( address contract_, address auditor, bool approved ) internal {
+        uint256 index = _contractIndex( contract_ );
+
+        require( contracts[ index ].auditor == auditor,   "Action restricted to contract Auditor" );
+        require( !contracts[ index ].destructed,          "Contract already marked as destructed" );
+        
+        contracts[ index ].approved = approved;
+        
+        if ( approved ) {
+            approvedContractCount = approvedContractCount.add( 1 );
+        } else {
+            opposedContractCount = opposedContractCount.add( 1 );
+        }
+        
+        emit CompletedAudit( contract_, auditor, approved );
+    }
+        
     }
 
     function _contractDestructed( address contract_, address initiator ) internal {
@@ -154,3 +164,8 @@ contract ContractStore {
     }
 
 }
+
+
+
+
+

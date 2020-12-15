@@ -179,6 +179,22 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
         _migrate( migrator, auditor );
     }
 
+    function register( address deployer, address auditor, address contract_, address creationHash ) external onlyOwner() whenNotPaused() {
+        require( activeStore, "Store has been deactivated" );
+        
+        uint256 size;
+        assembly { size:= extcodesize( contract_ ) }
+        require( size > 0,  "Contract argument is not a valid contract address" );
+        
+        // Must be a valid auditor in the current store to be able to write to the current store
+        require( _hasAuditorRecord( auditor ),  "No auditor record in the current store" );
+        require( _isAuditor( auditor ),         "Auditor has been suspended" );
+        
+        ( uint256 ) = _saveContract( auditor, contract_, deployer, creationHash );
+
+        _addDeployer( deployer );
+    }
+
     /**
         @notice Write a new completed audit into the data store
         @param auditor The address, intented to be a wallet, which represents an auditor

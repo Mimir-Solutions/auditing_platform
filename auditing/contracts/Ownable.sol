@@ -1,48 +1,49 @@
-// SPDX-License-Identifier: AGPL v3
+// SPDX-License-Identifier: AGPL-3.0-or-later
+pragma solidity 0.7.4;
 
-pragma solidity ^0.6.0;
+//import "@openzeppelin/contracts/GSN/Context.sol";
 
-import "@openzeppelin/contracts/GSN/Context.sol";
+// Temp
+abstract contract Context {
+    function _msgSender() internal view virtual returns (address payable) {
+        return msg.sender;
+    }
+}
 
-contract Ownable is Context {
 
-    // We need owner to be payable so this contract is basically the same + some improvements
-    // double underscore so that we can use external/internal visibility (automatic getter blocks otherwise)
-    address payable private __owner;
+abstract contract Ownable is Context {
+
+    address payable internal _owner;
 
     modifier onlyOwner() {
-        require(__owner == _msgSender(), "Ownable: caller is not the owner");
+        require( _owner == _msgSender(), "Ownable: caller is not the owner" );
         _;
     }
 
-    event OwnershipTransferred(address indexed _previousOwner, address indexed _newOwner);
+    event OwnershipTransferred( address indexed previousOwner, address indexed newOwner );
 
-    constructor() internal {
-        __owner = _msgSender();
-        emit OwnershipTransferred(address(0), __owner);  
+    constructor() {
+        _owner = _msgSender();
+        emit OwnershipTransferred( address( 0 ), _owner );  
     }
 
     function owner() external view returns (address payable) {
-        return _owner();
-    }
-
-    function _owner() internal view returns (address payable) {
-        return __owner;
+        return _owner;
     }
 
     function renounceOwnership() external onlyOwner() {
-        address prevOwner = __owner;
-        __owner = address(0);
+        address prevOwner = _owner;
+        _owner = address( 0 );
 
-        emit OwnershipTransferred(prevOwner, __owner);
+        emit OwnershipTransferred( prevOwner, _owner );
     }
 
-    function transferOwnership(address payable _newOwner) external onlyOwner() {
-        require(_newOwner != address(0), "Ownable: new owner is the zero address");
+    function transferOwnership( address payable newOwner ) external onlyOwner() {
+        require( newOwner != address( 0 ), "Ownable: new owner is the zero address" );
 
-        address prevOwner = __owner;
-        __owner = _newOwner;
+        address prevOwner = _owner;
+        _owner = newOwner;
 
-        emit OwnershipTransferred(prevOwner, __owner);
+        emit OwnershipTransferred( prevOwner, _owner );
     }
 }
