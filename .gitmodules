@@ -1,0 +1,9 @@
+[submodule "contracts/dependencies/authorization-platform"]
+	path = contracts/dependencies/authorization-platform
+	url = git@github.com:Mimir-Solutions/authorization-platform.git
+[submodule "contracts/dependencies/holyzeppelin"]
+	path = contracts/dependencies/holyzeppelin
+	url = git@github.com:Mimir-Solutions/holyzeppelin.git
+[submodule "contracts/wip/solidity-standard-library"]
+	path = contracts/wip/solidity-standard-library
+	url = git@github.com:Mimir-Solutions/solidity-standard-library.git
