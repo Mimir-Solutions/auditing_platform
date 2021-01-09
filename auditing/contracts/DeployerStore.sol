@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 // TODO: Ban list for deploying addresses? Address list linking one address to others since you can easily create a new wallet
 contract DeployerStore {
     
-    // using SafeMath for uint256;
+    using SafeMath for uint256;
 
     /**
      *  @notice Represents the number of currently valid deployers
