@@ -4,24 +4,30 @@ pragma solidity 0.7.4;
 import "./Auditable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
+// This is a basic Todo contract meaning it probably does not contain all the functionality of a regular todo manager.
+// It is for demonstration purposes only
+
 contract ToDo is Auditable {
 
     using SafeMath for uint256;
 
+    // There must be at least one task in their list and the taskID must be at most the index of the last task
     modifier taskExists( uint256 taskID ) {
         require( 0 < tasks[ _msgSender() ].length,        "Task list is empty" );
         require( taskID <= tasks[ _msgSender() ].length,  "Task does not exist" );
         _;
     }
 
+    // Keep track of the description, status and priority
     struct Task {
         uint256 priority;
         bool completed;
-        string task;
+        string description;
     }
 
-    // keep your naughtiness to yourself
+    // Your private tasks are your own, stop shoulder surfing
     mapping( address => Task[] ) private tasks;
+    mapping( address => uint256 ) private tasksCompleted;
 
     event AddedTask(            address creator, uint256 taskID);
     event CompletedTask(        address creator, uint256 taskID);
@@ -47,18 +53,19 @@ contract ToDo is Auditable {
         (
             tasks[ _msgSender() ][ taskID ].priority,
             tasks[ _msgSender() ][ taskID ].completed, 
-            tasks[ _msgSender() ][ taskID ].task
+            tasks[ _msgSender() ][ taskID ].description
         );
     }
 
-    function addTask( string calldata task ) external isApproved() {
+    function addTask( string calldata description ) external isApproved() {
+        // Nothing fancy in terms of priority. They can update it with another function instead of overloading or having an additional parameter
         tasks[ _msgSender() ].push( Task({
             priority: tasks[ _msgSender() ].length + 1,
             completed: false, 
-            task: task
+            description: description
         }));
 
-        emit AddedTask( _msgSender(), tasks[_msgSender()].length );
+        emit AddedTask( _msgSender(), tasks[ _msgSender() ].length );
     }
     
     function changeTaskPriority( uint256 taskID, uint256 priority ) external isApproved() taskExists( taskID ) {
@@ -66,21 +73,21 @@ contract ToDo is Auditable {
         taskID = safeTaskID( taskID );
         
         require( !tasks[ _msgSender() ][ taskID ].completed,            "Cannot edit completed task" );
-        require( tasks[ _msgSender() ][ taskID ].priority != priority,  "New priority must be different" );
+        require( tasks[ _msgSender() ][ taskID ].priority != priority,  "New priority must be different" ); // Keep your money, fool. You need it
         
         tasks[ _msgSender() ][ taskID ].priority = priority;
 
         emit UpdatedPriority( _msgSender(), id );
     }
     
-    function changeTaskDescription( uint256 taskID, string calldata task ) external isApproved() taskExists( taskID ) {
+    function changeTaskDescription( uint256 taskID, string calldata description ) external isApproved() taskExists( taskID ) {
         uint256 id = taskID;
         taskID = safeTaskID( taskID );
         
-        require(!tasks[ _msgSender() ][ taskID ].completed, "Cannot edit completed task");
-        require( keccak256( abi.encodePacked( tasks[ _msgSender() ][ taskID ].task ) ) != keccak256( abi.encodePacked( task ) ), "New description must be different" );
+        require( !tasks[ _msgSender() ][ taskID ].completed, "Cannot edit completed task" );
+        require( keccak256( abi.encodePacked( tasks[ _msgSender() ][ taskID ].description ) ) != keccak256( abi.encodePacked( description ) ), "New description must be different" ); // Keep your money, fool. You need it
         
-        tasks[ _msgSender() ][ taskID ].task = task;
+        tasks[ _msgSender() ][ taskID ].description = description;
 
         emit UpdatedDescription( _msgSender(), id );
     }
@@ -92,6 +99,7 @@ contract ToDo is Auditable {
         require( !tasks[ _msgSender() ][ taskID ].completed, "Task has already been completed" );
         
         tasks[ _msgSender() ][ taskID ].completed = true;
+        tasksCompleted[ _msgSender() ].add( 1 );
 
         emit CompletedTask( _msgSender(), id );
     }
@@ -103,6 +111,7 @@ contract ToDo is Auditable {
         require( tasks[ _msgSender() ][ taskID ].completed, "Task has not been completed" );
 
         tasks[ _msgSender() ][ taskID ].completed = false;
+        tasksCompleted[ _msgSender() ].sub( 1 );
 
         emit RevertedTask( _msgSender(), id );
     }
@@ -112,29 +121,11 @@ contract ToDo is Auditable {
     }
     
     function completedTaskCount() external isApproved() view returns ( uint256 ) {
-        // loops are evil. if you add too many tasks then RIP you
-        uint256 completed;
-        
-        for ( uint256 ID; ID < tasks[_msgSender()].length; ID++) {
-            if ( tasks[ _msgSender() ][ ID ].completed ) {
-                completed = completed.add( 1 );
-            }
-        }
-        
-        return completed;
+        return tasksCompleted[ _msgSender() ];
     }
     
     function incompleteTaskCount() external isApproved() view returns ( uint256 ) {
-        // loops are evil. if you add too many tasks then RIP you
-        uint256 incomplete;
-        
-        for (uint256 ID; ID < tasks[_msgSender()].length; ID++) {
-            if ( !tasks[ _msgSender() ][ ID ].completed ) {
-                incomplete = incomplete.add(1);
-            }
-        }
-        
-        return incomplete;
+        return tasks[ _msgSender() ].length - tasksCompleted[ _msgSender() ];
     }
 
     function taskPriority( uint256 taskID ) external isApproved() taskExists( taskID ) view returns ( uint256 ) {
@@ -146,6 +137,6 @@ contract ToDo is Auditable {
     }
     
     function taskDescription( uint256 taskID ) external isApproved() taskExists( taskID ) view returns ( string memory ) {
-        return tasks[ _msgSender() ][ safeTaskID( taskID ) ].task;
+        return tasks[ _msgSender() ][ safeTaskID( taskID ) ].description;
     }
 }
