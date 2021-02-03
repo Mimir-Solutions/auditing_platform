@@ -41,38 +41,59 @@ contract DeployerStore {
      *  @param owner The platform that added the deployer
      *  @param deployer The deployer who has been added
      */
-    event AddedDeployer( address indexed owner, address indexed deployer );
+    event AddedDeployer(
+        address indexed platform, 
+        address indexed dataStore, 
+        address indexed deployer
+    );
 
     /**
      *  @notice Prevent the deployer from adding new contracts by suspending their access
      *  @param owner The platform that suspended the deployer
      *  @param deployer The deployer who has been suspended
      */
-    event SuspendedDeployer( address indexed owner, address indexed deployer );
+    event SuspendedDeployer(
+        address indexed platformOwner,
+        address indexed platform,
+        address         dataStore,
+        address indexed deployer
+    );
     
     /**
      *  @notice Allow the deployer to continue acting as a valid deployer which can have their contracts added
      *  @param owner The platform that reinstated the deployer
      *  @param deployer The deployer who has been reinstated
      */
-    event ReinstatedDeployer( address indexed owner, address indexed deployer );
+    event ReinstatedDeployer(
+        address indexed platformOwner,
+        address indexed platform,
+        address         dataStore,
+        address indexed deployer
+    );
+
+    event SetContractIndex(
+        address platform, 
+        address dataStore, 
+        address deployer,
+        uint256 contractIndex, 
+        bool    approved 
+    );
 
     constructor() internal {}
 
-    function _addDeployer( address deployer ) internal {
+    function _addDeployer( address platform, address deployer ) internal {
         // If this is a new deployer address then write them into the store
         if ( !_hasDeployerRecord( deployer ) ) {
             deployers[ deployer ].deployer = deployer;
 
             activeDeployerCount = activeDeployerCount.add( 1 );
 
-            // Which platform initiated the call on the deployer
-            // Since this is an internal call will the caller change to the data store?
-            emit AddedDeployer( _msgSender(), deployer );
+            emit AddedDeployer( platform, _msgSender(), deployer );
         }
+        // TODO: check for blacklist, revert if true
     }
 
-    function _suspendDeployer( address deployer ) internal {
+    function _suspendDeployer( address platformOwner, address platform, address deployer ) internal {
         if ( _hasDeployerRecord( deployer ) ) {
             if ( !_isBlacklisted( deployer ) ) {
                 revert( "Deployer has already been blacklisted" );
@@ -87,23 +108,19 @@ contract DeployerStore {
         deployers[ deployer ].blacklisted = true;
         blacklistedDeployerCount = blacklistedDeployerCount.add( 1 );
 
-        // Which platform initiated the call on the deployer
-        // Since this is an internal call will the caller change to the data store?
-        emit SuspendedDeployer( _msgSender(), deployer );
+        emit SuspendedDeployer( platformOwner, platform, _msgSender(), deployer );
     }
 
-    function _reinstateDeployer( address deployer ) internal {
+    function _reinstateDeployer( address platformOwner, address platform, address deployer ) internal {
         require( _hasDeployerRecord( deployer ),    "No deployer record in the current store" );
-        require( !_isBlacklisted( deployer ),       "Deployer already has active status" );
+        require( _isBlacklisted( deployer ),        "Deployer already has active status" );
 
         deployers[ deployer ].blacklisted = false;
         
         activeDeployerCount = activeDeployerCount.add( 1 );
         blacklistedDeployerCount = blacklistedDeployerCount.sub( 1 );
 
-        // Which platform initiated the call on the deployer
-        // Since this is an internal call will the caller change to the data store?
-        emit ReinstatedDeployer( _msgSender(), deployer );
+        emit ReinstatedDeployer( platformOwner, platform, _msgSender(), deployer );
     }
 
     function _hasDeployerRecord( address deployer ) private view returns ( bool ) {
@@ -117,7 +134,7 @@ contract DeployerStore {
         return deployers[ deployer ].blacklisted;
     }
 
-    function _deployerDetails( address deployer ) internal view returns ( bool, uint256, uint256 ) {
+    function _getDeployerInformation( address deployer ) internal view returns ( bool, uint256, uint256 ) {
         require( _hasDeployerRecord( deployer ), "No deployer record in the current store" );
 
         return 
@@ -128,37 +145,39 @@ contract DeployerStore {
         );
     }
 
-    function _deployerApprovedContract( address deployer, uint256 index ) internal view returns ( uint256 ) {
-        require( _hasDeployerRecord( deployer ),                            "No deployer record in the current store" );
-        require( 0 < deployers[ deployer ].approvedContracts.length,        "Approved list is empty" );
-        require( index <= deployers[ deployer ].approvedContracts.length,   "Record does not exist" );
+    function _getDeployerApprovedContractIndex( address deployer, uint256 contractIndex ) internal view returns ( uint256 ) {
+        require( _hasDeployerRecord( deployer ),                                    "No deployer record in the current store" );
+        require( 0 < deployers[ deployer ].approvedContracts.length,                "Approved list is empty" );
+        require( contractIndex <= deployers[ deployer ].approvedContracts.length,   "Record does not exist" );
 
         // Indexing from the number 0 therefore decrement if you must
-        if ( index != 0 ) {
-            index = index.sub( 1 );
+        if ( contractIndex != 0 ) {
+            contractIndex = contractIndex.sub( 1 );
         }
 
-        return deployers[ deployer ].approvedContracts[ index ];
+        return deployers[ deployer ].approvedContracts[ contractIndex ];
     }
 
-    function _deployerOpposedContract( address deployer, uint256 index ) external view returns ( uint256 ) {
-        require( _hasDeployerRecord( deployer ),                            "No deployer record in the current store" );
-        require( 0 < deployers[ deployer ].opposedContracts.length,         "Opposed list is empty" );
-        require( index <= deployers[ deployer ].opposedContracts.length,    "Record does not exist" );
+    function _getDeployerOpposedContractIndex( address deployer, uint256 contractIndex ) external view returns ( uint256 ) {
+        require( _hasDeployerRecord( deployer ),                                    "No deployer record in the current store" );
+        require( 0 < deployers[ deployer ].opposedContracts.length,                 "Opposed list is empty" );
+        require( contractIndex <= deployers[ deployer ].opposedContracts.length,    "Record does not exist" );
 
         // Indexing from the number 0 therefore decrement if you must
-        if ( index != 0 ) {
-            index = index.sub( 1 );
+        if ( contractIndex != 0 ) {
+            contractIndex = contractIndex.sub( 1 );
         }
 
-        return deployers[ deployer ].opposedContracts[ index ];
+        return deployers[ deployer ].opposedContracts[ contractIndex ];
     }
 
-    function _saveContractIndexForDeplyer( address deployer, bool approved, uint256 index ) internal {
+    function _saveContractIndexForDeplyer( address platform, address deployer, bool approved, uint256 contractIndex ) internal {
         if ( approved ) {
-            deployers[ deployer ].approvedContracts.push( index );
+            deployers[ deployer ].approvedContracts.push( contractIndex );
         } else {
-            deployers[ deployer ].opposedContracts.push( index );
+            deployers[ deployer ].opposedContracts.push( contractIndex );
         }
+
+        emit SetContractIndex( platform, msg.sender, deployer, contractIndex, approved );
     }
 }

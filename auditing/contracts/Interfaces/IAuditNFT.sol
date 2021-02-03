@@ -2,7 +2,7 @@
 pragma solidity 0.7.5;
 
 interface IAuditNFT {
-    
+
     function mint( address auditor, address contract_, address deployer, bool approved, bytes calldata hash ) external;
 
 }

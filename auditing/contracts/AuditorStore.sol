@@ -9,20 +9,20 @@ contract AuditorStore {
     using SafeMath for uint256;
 
     /**
-     *  @param activeAuditorCount Represents the number of currently valid auditors who can write into the store
+     * @param activeAuditorCount Represents the number of currently valid auditors who can write into the store
      */
     uint256 public activeAuditorCount;
 
     /**
-     *  @param activeAuditorCount Represents the number of currently invalid auditors who have their write permissions suspended
+     * @param activeAuditorCount Represents the number of currently invalid auditors who have their write permissions suspended
      */
     uint256 public suspendedAuditorCount;
 
     /**
-     *  @param auditor The address of the auditor used as a check for whether the auditor exists
-     *  @param isAuditor Indicator of whether the auditor currently has write permissions
-     *  @param approvedContracts Contains indexes of the contracts that the auditor has approved
-     *  @param opposedContracts Contains indexes of the contracts that the auditor has opposed
+     * @param auditor The address of the auditor used as a check for whether the auditor exists
+     * @param isAuditor Indicator of whether the auditor currently has write permissions
+     * @param approvedContracts Contains indexes of the contracts that the auditor has approved
+     * @param opposedContracts Contains indexes of the contracts that the auditor has opposed
      */
     struct Auditor {
         address    auditor;
@@ -32,41 +32,70 @@ contract AuditorStore {
     }
 
     /**
-     *  @notice Store data related to the auditors
+     * @notice Store data related to the auditors
      */
     mapping( address => Auditor ) public auditors;
 
     /**
-     *  @notice Add an auditor into the current data store for the first time
-     *  @param owner The platform that added the auditor
-     *  @param auditor The auditor who has been added
+     * @notice Add an auditor into the current data store for the first time
+     * @param platformOwner The admin of a platform that is able to manipulate the auditors
+     * @param platform The organization which the dataStore belongs to
+     * @param dataStore The data store which called into this auditor store
+     * @param auditor The entity that is/was deemed as someone able to perform audits
      */
-    event AddedAuditor( address indexed owner, address indexed auditor );
+    event AddedAuditor(
+        address platformOwner, 
+        address platform, 
+        address indexed dataStore, 
+        address indexed auditor
+    );
 
     /**
-     *  @notice Prevent the auditor from adding new records by suspending their access
-     *  @param owner The platform that suspended the auditor
-     *  @param auditor The auditor who has been suspended
+     * @notice Prevent the auditor from adding new records by suspending their access
+     * @param platformOwner The admin of a platform that is able to manipulate the auditors
+     * @param platform The organization which the dataStore belongs to
+     * @param dataStore The data store which called into this auditor store
+     * @param auditor The entity that is/was deemed as someone able to perform audits
      */
-    event SuspendedAuditor( address indexed owner, address indexed auditor );
+    event SuspendedAuditor(
+        address platformOwner, 
+        address platform, 
+        address indexed dataStore, 
+        address indexed auditor
+    );
     
     /**
-     *  @notice Allow the auditor to continue acting as a valid auditor which can add new records
-     *  @param owner The platform that reinstated the auditor
-     *  @param auditor The auditor who has been reinstated
+     * @notice Allow the auditor to continue acting as a valid auditor which can add new records
+     * @param platformOwner The admin of a platform that is able to manipulate the auditors
+     * @param platform The organization which the dataStore belongs to
+     * @param dataStore The data store which called into this auditor store
+     * @param auditor The entity that is/was deemed as someone able to perform audits
      */
-    event ReinstatedAuditor( address indexed owner, address indexed auditor );
+    event ReinstatedAuditor(
+        address platformOwner, 
+        address platform, 
+        address indexed dataStore, 
+        address indexed auditor
+    );
 
     /**
-     *  @notice If the auditor is currently a valid auditor then they can be migrated into the newer store
-     *  @param migrator Who attempted the migration (pre-access control it is the auditor themselves)
-     *  @param auditor The auditor who is being migrated
+     * @notice If the auditor is currently a valid auditor then they can be migrated into the newer store
+     * @param migrator Who attempted the migration (pre-access control it is the auditor themselves)
+     * @param auditor The auditor who is being migrated
      */
     event AcceptedMigration( address indexed migrator, address indexed auditor );
 
+    event SetContractIndex(
+        address platform, 
+        address dataStore, 
+        address auditor, 
+        uint256 index,
+        bool approved
+    );
+
     constructor() internal {}
 
-    function _addAuditor( address auditor ) internal {
+    function _addAuditor( address platformOwner, address platform, address auditor ) internal {
         require( !_hasAuditorRecord( auditor ), "Auditor record already exists" );
 
         auditors[ auditor ].isAuditor = true;
@@ -74,32 +103,29 @@ contract AuditorStore {
 
         activeAuditorCount = activeAuditorCount.add( 1 );
 
-        // Which platform initiated the call on the auditor
-        // Since this is an internal call will the caller change to the data store?
-        emit AddedAuditor( _msgSender(), auditor );
+        emit AddedAuditor( platformOwner, platform, _msgSender(), auditor );
     }
 
-    function _suspendAuditor( address auditor ) internal {
+    function _suspendAuditor( address platformOwner, address platform, address auditor ) internal {
         if ( _hasAuditorRecord( auditor ) ) {
             if ( !_isAuditor( auditor ) ) {
                 revert( "Auditor has already been suspended" );
             }
             activeAuditorCount = activeAuditorCount.sub( 1 );
         } else {
-            // If the previous store has been disabled when they were an auditor then write them into the (new) current store and disable
-            // their permissions for writing into this store and onwards. They should not be able to write back into the previous store anyway
+            // If the previous store has been disabled when they were an auditor then write them into the (new) current store 
+            // and disable their permissions for writing into this store and onwards. They should not be able to write back into 
+            // the previous store anyway
             auditors[ auditor ].auditor = auditor;
         }
 
-        auditors[auditor].isAuditor = false;        
+        auditors[ auditor ].isAuditor = false;        
         suspendedAuditorCount = suspendedAuditorCount.add( 1 );
 
-        // Which platform initiated the call on the auditor
-        // Since this is an internal call will the caller change to the data store?
-        emit SuspendedAuditor( _msgSender(), auditor );
+        emit SuspendedAuditor( platformOwner, platform, _msgSender(), auditor );
     }
 
-    function _reinstateAuditor( address auditor ) internal {
+    function _reinstateAuditor( address platformOwner, address platform, address auditor ) internal {
         require( _hasAuditorRecord( auditor ),  "No auditor record in the current store" );
         require( !_isAuditor( auditor ),        "Auditor already has active status" );
 
@@ -108,9 +134,7 @@ contract AuditorStore {
         activeAuditorCount = activeAuditorCount.add( 1 );
         suspendedAuditorCount = suspendedAuditorCount.sub( 1 );
 
-        // Which platform initiated the call on the auditor
-        // Since this is an internal call will the caller change to the data store?
-        emit ReinstatedAuditor( _msgSender(), auditor );
+        emit ReinstatedAuditor( platformOwner, platform, _msgSender(), auditor );
     }
 
     function _hasAuditorRecord( address auditor ) internal view returns ( bool ) {
@@ -118,13 +142,13 @@ contract AuditorStore {
     }
 
     /**
-     *  @dev Returns false in both cases where an auditor has not been added into this datastore or if they have been added but suspended
+     * @dev Returns false in both cases where an auditor has not been added into this datastore or if they have been added but suspended
      */
     function _isAuditor( address auditor ) internal view returns ( bool ) {
         return auditors[ auditor ].isAuditor;
     }
 
-    function _auditorDetails( address auditor ) internal view returns ( bool, uint256, uint256 ) {
+    function _getAuditorInformation( address auditor ) internal view returns ( bool, uint256, uint256 ) {
         require( _hasAuditorRecord( auditor ), "No auditor record in the current store" );
 
         return 
@@ -135,8 +159,14 @@ contract AuditorStore {
         );
     }
 
-    function _auditorApprovedContract( address auditor, uint256 index ) internal view returns ( uint256 ) {
-        require( _hasAuditorRecord( auditor ),                          "No auditor record in the current store" );
+    /**
+     * @notice 
+     * @param auditor The entity that is/was deemed as someone able to perform audits
+     * @param index A number which should be less than or equal to the total number of approved contracts for the auditor
+     * @return A number that represents the location in the contract array where the contract information is referenced by
+     */
+    function _getAuditorApprovedContractIndex( address auditor, uint256 index ) internal view returns ( uint256 ) {
+        require( _hasAuditorRecord( auditor ),                          "There is no record of the specified auditor in the current store" );
         require( 0 < auditors[ auditor ].approvedContracts.length,      "Approved list is empty" );
         require( index <= auditors[ auditor ].approvedContracts.length, "Record does not exist" );
 
@@ -148,8 +178,14 @@ contract AuditorStore {
         return auditors[ auditor ].approvedContracts[ index ];
     }
 
-    function _auditorOpposedContract( address auditor, uint256 index ) internal view returns ( uint256 ) {
-        require( _hasAuditorRecord( auditor ),                          "No auditor record in the current store" );
+    /**
+     * @notice 
+     * @param auditor The entity that is/was deemed as someone able to perform audits
+     * @param index A number which should be less than or equal to the total number of opposed contracts for the auditor
+     * @return A number that represents the location in the contract array where the contract information is referenced by
+     */
+    function _getAuditorOpposedContractIndex( address auditor, uint256 index ) internal view returns ( uint256 ) {
+        require( _hasAuditorRecord( auditor ),                          "There is no record of the specified auditor in the current store" );
         require( 0 < auditors[ auditor ].opposedContracts.length,       "Opposed list is empty" );
         require( index <= auditors[ auditor ].opposedContracts.length,  "Record does not exist" );
 
@@ -181,12 +217,14 @@ contract AuditorStore {
         }
     }
 
-    function _saveContractIndexForAuditor( address auditor, bool approved, uint256 index ) internal {
+    function _saveContractIndexForAuditor( address platform, address auditor, bool approved, uint256 index ) internal {
         if ( approved ) {
             auditors[ auditor ].approvedContracts.push( index );
         } else {
             auditors[ auditor ].opposedContracts.push( index );
         }
+
+        emit SetContractIndex( platform, msg.sender, auditor, index, approved );
     }
 
     function _recursiveIsAuditorSearch( address auditor, address previousDatastore ) private view returns ( bool ) {

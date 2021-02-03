@@ -1,0 +1,120 @@
+This is a dump for sections of code that have been removed until they can be considered properly
+I cannot be bothered to fish through an unknown number of commits to find it later so here it is instead
+
+Auditable.sol
+-----------------------------------------
+
+/**
+*  @notice Allows the auditor or the owner to clean up after themselves and return a portion of the deployment funds if the contract is opposed
+*/
+function destruct() external {
+	// TODO: Would be nice to allow them to change ownership and have the new owner destroy too but that requires
+	//       changes to the data stores to keep track of the current owner too. Not an issue but it is a nice to have (for them).
+	//       For this to occur there needs to be a function that calls to the platform -> data store to update the ownership and
+	//       then when this is called you check for the auditor, deployer or owner calling. If it is them then call the platform ->
+	//       data store (which would have its own checks for one of those 3 otherwise it reverts)
+
+	address initiator = _msgSender();
+
+	require( initiator == auditor || initiator == deployer,     "Auditor and Deployer only" );
+	require( audited,                                           "Cannot destruct an unaudited contract" );
+	require( !approved,                                         "Cannot destruct an approved contract" );
+
+	IAuditingPlatform( platform ).contractDestructed( initiator );
+
+	selfdestruct( deployer );
+}
+
+
+IAuditingPlatform.sol
+-----------------------------------------
+
+function contractDestructed( address sender ) external;
+
+
+Platform.sol
+-----------------------------------------
+
+/**
+ * @notice Event tracking when a contract has been destructed
+ * @param sender Initiator of the destruction
+ * @param contract_ the contract that has been destructed
+ */
+event ContractDestructed( address indexed sender, address contract_ );
+
+function contractDestructed( address sender ) external {
+	// Design flaw: this does not ensure that the contract will be destroyed as a contract may have a function that
+	// allows it to call this and falsely set the bool from false to true
+	// TODO: Better to make the auditor be the _msgSender() and pass in the contract as a default argument
+	
+	/**
+		* Scenario 1: Contract is honest
+		*      Either auditor or deployer init the call and thus this function is called with them as the argument
+		*      Everything is OK
+		* 
+		* Scenario 2: Use this function directly
+		*      Implementation should force the destruct() function to call this and thus force the audited contract to call this
+		*      However, an unaccounted issue occurs and the auditor wants (or has to) directly call this function instead.
+		*      E.g. there is another selfdestruct and the auditor approves the contract but then that other function is used making
+		*      our original destruct() function obsolete since the contract is nuked at that point and thus this function could be the
+		*      saviour for the auditor ... then again it is their responsibility before they approve to not allow such things?
+		*      What about our "clean" store?
+		*      Tough shit or do we allow such an event? I want a clean store but also "do not fuck up" (probably more so).
+		* 
+		* Scenario 3: Dishonest contract
+		*      Contract function that differs from destruct() is called which passes in anyone.
+		*      If they pass in the auditor or deployer and the contract is not actually destroyed then what?
+		*      We do not want to force the destruct() function to be auditor only but that would fix this (assuming vetted + honest auditor)
+		*/
+
+	IDatastore( dataStore ).contractDestructed( _msgSender(), sender );
+	emit ContractDestructed( sender, _msgSender() );
+}
+
+
+IDatastore.sol
+-----------------------------------------
+
+function contractDestructed( address sender ) external;
+
+
+Datastore.sol
+-----------------------------------------
+
+function contractDestructed( address contract_, address initiator ) external onlyOwner() {
+	_contractDestructed( contract_, initiator );
+}
+
+
+ContractStore.sol
+-----------------------------------------
+
+event ContractDestructed( address indexed sender, address contract_ );
+
+function _contractDestructed( address contract_, address initiator ) internal {
+	uint256 index = _contractIndex( contract_ );
+
+	require( contracts[ index ].auditor == initiator || contracts[ index ].deployer == initiator,   "Action restricted to contract Auditor or Deployer" );
+	require( !contracts[ index ].destructed,                                                        "Contract already marked as destructed" );
+
+	contracts[ index ].destructed = true;
+
+	emit ContractDestructed( initiator, contract_ );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
