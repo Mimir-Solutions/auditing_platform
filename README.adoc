@@ -1,0 +1,15 @@
+= AuditDAO On-Chain Audit Recoridng Platform
+
+This code base is freely available to any auditor or firm to record their own audits.
+This is intended a reference architecture that can be used whole or in part.
+The code is licensed under the AGPLv3 license to encourage the sharing of any modifications for improvements to benefit the community as a whole.
+
+== Auditor Portal usage
+
+=== Auditor Login Workflow
+
+image::diagrams/login.drawio.svg[]
+
+=== Auditor Audit Approve Workflow
+
+image::diagrams/audit_registered_contracts.drawio.svg[]
