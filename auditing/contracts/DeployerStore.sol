@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-pragma solidity 0.7.4;
+pragma solidity ^0.8.1;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
+import "./Ownable.sol";
+// TODO: Add recursivev calls from IDatastore?
 
 // TODO: Ban list for deploying addresses? Address list linking one address to others since you can easily create a new wallet
 contract DeployerStore {
     
-    // using SafeMath for uint256;
+    using SafeMath for uint256; 
 
     /**
      *  @notice Represents the number of currently valid deployers
@@ -17,6 +19,8 @@ contract DeployerStore {
      *  @notice Represents the number of invalid deployers who have been banned
      */
     uint256 public blacklistedDeployerCount;
+
+    address previousDeployerStore;
 
     /**
      *  @param deployer The address of the deployer used as a check for whether the deployer exists
@@ -78,10 +82,12 @@ contract DeployerStore {
         uint256 contractIndex, 
         bool    approved 
     );
+    
+    event LinkedDeployerStore();
 
-    constructor() internal {}
+    constructor() public {}
 
-    function _addDeployer( address platform, address deployer ) internal {
+    function addDeployer( address platform, address deployer ) external onlyOwner() {
         // If this is a new deployer address then write them into the store
         if ( !_hasDeployerRecord( deployer ) ) {
             deployers[ deployer ].deployer = deployer;
@@ -89,11 +95,12 @@ contract DeployerStore {
             activeDeployerCount = activeDeployerCount.add( 1 );
 
             emit AddedDeployer( platform, _msgSender(), deployer );
+        } else if ( deployers[ deployer ].blacklisted ) {
+            revert( "Deployer has been blacklisted" );
         }
-        // TODO: check for blacklist, revert if true
     }
 
-    function _suspendDeployer( address platformOwner, address platform, address deployer ) internal {
+    function suspendDeployer( address platformOwner, address platform, address deployer ) external onlyOwner() {
         if ( _hasDeployerRecord( deployer ) ) {
             if ( !_isBlacklisted( deployer ) ) {
                 revert( "Deployer has already been blacklisted" );
@@ -111,7 +118,7 @@ contract DeployerStore {
         emit SuspendedDeployer( platformOwner, platform, _msgSender(), deployer );
     }
 
-    function _reinstateDeployer( address platformOwner, address platform, address deployer ) internal {
+    function reinstateDeployer( address platformOwner, address platform, address deployer ) external onlyOwner() {
         require( _hasDeployerRecord( deployer ),    "No deployer record in the current store" );
         require( _isBlacklisted( deployer ),        "Deployer already has active status" );
 
@@ -130,11 +137,11 @@ contract DeployerStore {
     /**
      *  @dev Returns false in both cases where an deployer has not been added into this datastore or if they have been added but blacklisted
      */
-    function _isBlacklisted( address deployer ) internal view returns ( bool ) {
+    function isBlacklisted( address deployer ) external onlyOwner() view returns ( bool ) {
         return deployers[ deployer ].blacklisted;
     }
 
-    function _getDeployerInformation( address deployer ) internal view returns ( bool, uint256, uint256 ) {
+    function getDeployerInformation( address deployer ) external onlyOwner() view returns ( bool, uint256, uint256 ) {
         require( _hasDeployerRecord( deployer ), "No deployer record in the current store" );
 
         return 
@@ -145,7 +152,7 @@ contract DeployerStore {
         );
     }
 
-    function _getDeployerApprovedContractIndex( address deployer, uint256 contractIndex ) internal view returns ( uint256 ) {
+    function getDeployerApprovedContractIndex( address deployer, uint256 contractIndex ) external onlyOwner() view returns ( uint256 ) {
         require( _hasDeployerRecord( deployer ),                                    "No deployer record in the current store" );
         require( 0 < deployers[ deployer ].approvedContracts.length,                "Approved list is empty" );
         require( contractIndex <= deployers[ deployer ].approvedContracts.length,   "Record does not exist" );
@@ -158,7 +165,7 @@ contract DeployerStore {
         return deployers[ deployer ].approvedContracts[ contractIndex ];
     }
 
-    function _getDeployerOpposedContractIndex( address deployer, uint256 contractIndex ) external view returns ( uint256 ) {
+    function getDeployerOpposedContractIndex( address deployer, uint256 contractIndex ) external view returns ( uint256 ) {
         require( _hasDeployerRecord( deployer ),                                    "No deployer record in the current store" );
         require( 0 < deployers[ deployer ].opposedContracts.length,                 "Opposed list is empty" );
         require( contractIndex <= deployers[ deployer ].opposedContracts.length,    "Record does not exist" );
@@ -171,7 +178,7 @@ contract DeployerStore {
         return deployers[ deployer ].opposedContracts[ contractIndex ];
     }
 
-    function _saveContractIndexForDeplyer( address platform, address deployer, bool approved, uint256 contractIndex ) internal {
+    function saveContractIndexForDeplyer( address platform, address deployer, bool approved, uint256 contractIndex ) external onlyOwner() {
         if ( approved ) {
             deployers[ deployer ].approvedContracts.push( contractIndex );
         } else {
@@ -180,4 +187,11 @@ contract DeployerStore {
 
         emit SetContractIndex( platform, msg.sender, deployer, contractIndex, approved );
     }
+
+    function linkDeplyerStore( address deplyerStore ) external onlyOwner() {
+        previousDeployerStore = deplyerStore;
+    }
+
+    
 }
+

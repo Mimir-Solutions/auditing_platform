@@ -1,11 +1,8 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-pragma solidity 0.7.4;
+// SPDX-License-Identifier: AGPL v3
+pragma solidity ^0.8.1;
 
+import "./SafeMath.sol";
 import "./Auditable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
-
-// This is a basic Todo contract meaning it probably does not contain all the functionality of a regular todo manager.
-// It is for demonstration purposes only
 
 contract ToDo is Auditable {
 
@@ -35,7 +32,7 @@ contract ToDo is Auditable {
     event UpdatedDescription(   address creator, uint256 taskID);
     event UpdatedPriority(      address creator, uint256 taskID);
 
-    constructor( address auditor, address platform ) Auditable( auditor, platform ) public {}
+    constructor() Auditable() public {}
 
     function safeTaskID( uint256 taskID ) private pure returns ( uint256 ) {
         // Cannot completely tailer to everyone because I can either start from the 0th indexed
@@ -51,92 +48,95 @@ contract ToDo is Auditable {
         taskID = safeTaskID( taskID );
         return 
         (
-            tasks[ _msgSender() ][ taskID ].priority,
-            tasks[ _msgSender() ][ taskID ].completed, 
-            tasks[ _msgSender() ][ taskID ].description
+            tasks[ msg.sender ][ taskID ].priority,
+            tasks[ msg.sender ][ taskID ].completed, 
+            tasks[ msg.sender ][ taskID ].description
         );
     }
 
     function addTask( string calldata description ) external isApproved() {
         // Nothing fancy in terms of priority. They can update it with another function instead of overloading or having an additional parameter
-        tasks[ _msgSender() ].push( Task({
-            priority: tasks[ _msgSender() ].length + 1,
+        tasks[ msg.sender ].push( Task({
+            priority: tasks[ msg.sender ].length + 1,
             completed: false, 
             description: description
         }));
 
-        emit AddedTask( _msgSender(), tasks[ _msgSender() ].length );
+        emit AddedTask( msg.sender, tasks[ msg.sender ].length );
     }
     
     function changeTaskPriority( uint256 taskID, uint256 priority ) external isApproved() taskExists( taskID ) {
         uint256 id = taskID;
         taskID = safeTaskID( taskID );
         
-        require( !tasks[ _msgSender() ][ taskID ].completed,            "Cannot edit completed task" );
-        require( tasks[ _msgSender() ][ taskID ].priority != priority,  "New priority must be different" ); // Keep your money, fool. You need it
+        require( !tasks[ msg.sender ][ taskID ].completed,            "Cannot edit completed task" );
+        require( tasks[ msg.sender ][ taskID ].priority != priority,  "New priority must be different" ); // Keep your money, fool. You need it
         
-        tasks[ _msgSender() ][ taskID ].priority = priority;
+        tasks[ msg.sender ][ taskID ].priority = priority;
 
-        emit UpdatedPriority( _msgSender(), id );
+        emit UpdatedPriority( msg.sender, id );
     }
     
     function changeTaskDescription( uint256 taskID, string calldata description ) external isApproved() taskExists( taskID ) {
         uint256 id = taskID;
         taskID = safeTaskID( taskID );
         
-        require( !tasks[ _msgSender() ][ taskID ].completed, "Cannot edit completed task" );
-        require( keccak256( abi.encodePacked( tasks[ _msgSender() ][ taskID ].description ) ) != keccak256( abi.encodePacked( description ) ), "New description must be different" ); // Keep your money, fool. You need it
+        require( !tasks[ msg.sender ][ taskID ].completed, "Cannot edit completed task" );
+        require( keccak256( abi.encodePacked( tasks[ msg.sender ][ taskID ].description ) ) != keccak256( abi.encodePacked( description ) ), "New description must be different" ); // Keep your money, fool. You need it
         
-        tasks[ _msgSender() ][ taskID ].description = description;
+        tasks[ msg.sender ][ taskID ].description = description;
 
-        emit UpdatedDescription( _msgSender(), id );
+        emit UpdatedDescription( msg.sender, id );
     }
     
     function completeTask( uint256 taskID ) external isApproved() taskExists( taskID ) {
         uint256 id = taskID;
         taskID = safeTaskID( taskID );
         
-        require( !tasks[ _msgSender() ][ taskID ].completed, "Task has already been completed" );
+        require( !tasks[ msg.sender ][ taskID ].completed, "Task has already been completed" );
         
-        tasks[ _msgSender() ][ taskID ].completed = true;
-        tasksCompleted[ _msgSender() ].add( 1 );
+        tasks[ msg.sender ][ taskID ].completed = true;
+        tasksCompleted[ msg.sender ].add( 1 );
 
-        emit CompletedTask( _msgSender(), id );
+        emit CompletedTask( msg.sender, id );
     }
 
     function undoTask( uint256 taskID ) external isApproved() taskExists( taskID ) {
         uint256 id = taskID;
         taskID = safeTaskID( taskID );
         
-        require( tasks[ _msgSender() ][ taskID ].completed, "Task has not been completed" );
+        require( tasks[ msg.sender ][ taskID ].completed, "Task has not been completed" );
 
-        tasks[ _msgSender() ][ taskID ].completed = false;
-        tasksCompleted[ _msgSender() ].sub( 1 );
+        tasks[ msg.sender ][ taskID ].completed = false;
+        tasksCompleted[ msg.sender ].sub( 1 );
 
-        emit RevertedTask( _msgSender(), id );
+        emit RevertedTask( msg.sender, id );
     }
     
     function taskCount() external isApproved() view returns ( uint256 ) {
-        return tasks[ _msgSender() ].length;
+        return tasks[ msg.sender ].length;
     }
     
     function completedTaskCount() external isApproved() view returns ( uint256 ) {
-        return tasksCompleted[ _msgSender() ];
+        return tasksCompleted[ msg.sender ];
     }
     
     function incompleteTaskCount() external isApproved() view returns ( uint256 ) {
-        return tasks[ _msgSender() ].length - tasksCompleted[ _msgSender() ];
+        return tasks[ msg.sender ].length - tasksCompleted[ msg.sender ];
     }
 
     function taskPriority( uint256 taskID ) external isApproved() taskExists( taskID ) view returns ( uint256 ) {
-        return tasks[ _msgSender() ][ safeTaskID( taskID ) ].priority;
+        return tasks[ msg.sender ][ safeTaskID( taskID ) ].priority;
     }
 
     function isTaskCompleted(uint256 taskID) external isApproved() taskExists( taskID ) view returns ( bool ) {
-        return tasks[ _msgSender() ][ safeTaskID( taskID ) ].completed;
+        return tasks[ msg.sender ][ safeTaskID( taskID ) ].completed;
     }
     
     function taskDescription( uint256 taskID ) external isApproved() taskExists( taskID ) view returns ( string memory ) {
-        return tasks[ _msgSender() ][ safeTaskID( taskID ) ].description;
+        return tasks[ msg.sender ][ safeTaskID( taskID ) ].description;
     }
 }
+
+
+

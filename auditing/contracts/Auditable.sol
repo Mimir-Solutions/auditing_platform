@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-pragma solidity 0.7.4;
+pragma solidity ^0.8.1;
 
 import "./Ownable.sol";
 import "./IAuditingPlatform.sol";
@@ -46,7 +46,7 @@ abstract contract Auditable is Ownable {
      * @dev Use this on every function in the inheriting contracts
      */
     modifier isApproved() {
-        require( audited, "Contract is yet to be audited, functionality disabled" );
+        require( audited,   "Contract is yet to be audited, functionality disabled" );
         require( _approved, "Contract failed the audit, functionality permanently disabled" );
         _;
     }
@@ -92,7 +92,7 @@ abstract contract Auditable is Ownable {
     /**
      * @notice When deploying the contract set the deployer as the original owner
      */
-    constructor() Ownable() {
+    constructor() Ownable() public {
         deployer = _owner;
     }
 
@@ -183,4 +183,5 @@ abstract contract Auditable is Ownable {
     }
 
 }
+
 

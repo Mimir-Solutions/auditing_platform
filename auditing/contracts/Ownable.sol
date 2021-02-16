@@ -1,15 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-pragma solidity 0.7.4;
+pragma solidity ^0.8.1;
 
-//import "@openzeppelin/contracts/GSN/Context.sol";
-
-// Temp
-abstract contract Context {
-    function _msgSender() internal view virtual returns (address payable) {
-        return msg.sender;
-    }
-}
-
+import "./Context.sol";
 
 abstract contract Ownable is Context {
 
@@ -22,7 +14,7 @@ abstract contract Ownable is Context {
 
     event OwnershipTransferred( address indexed previousOwner, address indexed newOwner );
 
-    constructor() {
+    constructor() internal {
         _owner = _msgSender();
         emit OwnershipTransferred( address( 0 ), _owner );  
     }
@@ -33,7 +25,7 @@ abstract contract Ownable is Context {
 
     function renounceOwnership() external onlyOwner() {
         address prevOwner = _owner;
-        _owner = address( 0 );
+        _owner = payable( address( 0 ) ); // payable hate crime caused by compiler
 
         emit OwnershipTransferred( prevOwner, _owner );
     }
@@ -47,3 +39,10 @@ abstract contract Ownable is Context {
         emit OwnershipTransferred( prevOwner, _owner );
     }
 }
+
+
+
+
+
+
+

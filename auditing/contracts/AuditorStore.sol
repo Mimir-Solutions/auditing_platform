@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-pragma solidity 0.7.4;
+pragma solidity ^0.8.1;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 import "./IDatastore.sol";
+import "./Ownable.sol";
 
 contract AuditorStore {
     
@@ -17,6 +18,8 @@ contract AuditorStore {
      * @param activeAuditorCount Represents the number of currently invalid auditors who have their write permissions suspended
      */
     uint256 public suspendedAuditorCount;
+    
+    address previousAuditorStore;
 
     /**
      * @param auditor The address of the auditor used as a check for whether the auditor exists
@@ -92,10 +95,12 @@ contract AuditorStore {
         uint256 index,
         bool approved
     );
+    
+    event LinkedAuditorStore();
 
-    constructor() internal {}
+    constructor() public {}
 
-    function _addAuditor( address platformOwner, address platform, address auditor ) internal {
+    function addAuditor( address platformOwner, address platform, address auditor ) external onlyOwner() {
         require( !_hasAuditorRecord( auditor ), "Auditor record already exists" );
 
         auditors[ auditor ].isAuditor = true;
@@ -106,7 +111,7 @@ contract AuditorStore {
         emit AddedAuditor( platformOwner, platform, _msgSender(), auditor );
     }
 
-    function _suspendAuditor( address platformOwner, address platform, address auditor ) internal {
+    function suspendAuditor( address platformOwner, address platform, address auditor ) external onlyOwner() {
         if ( _hasAuditorRecord( auditor ) ) {
             if ( !_isAuditor( auditor ) ) {
                 revert( "Auditor has already been suspended" );
@@ -125,7 +130,7 @@ contract AuditorStore {
         emit SuspendedAuditor( platformOwner, platform, _msgSender(), auditor );
     }
 
-    function _reinstateAuditor( address platformOwner, address platform, address auditor ) internal {
+    function reinstateAuditor( address platformOwner, address platform, address auditor ) external onlyOwner() {
         require( _hasAuditorRecord( auditor ),  "No auditor record in the current store" );
         require( !_isAuditor( auditor ),        "Auditor already has active status" );
 
@@ -137,18 +142,18 @@ contract AuditorStore {
         emit ReinstatedAuditor( platformOwner, platform, _msgSender(), auditor );
     }
 
-    function _hasAuditorRecord( address auditor ) internal view returns ( bool ) {
+    function hasAuditorRecord( address auditor ) external onlyOwner() view returns ( bool ) {
         return auditors[ auditor ].auditor != address( 0 );
     }
 
     /**
      * @dev Returns false in both cases where an auditor has not been added into this datastore or if they have been added but suspended
      */
-    function _isAuditor( address auditor ) internal view returns ( bool ) {
+    function isAuditor( address auditor ) external onlyOwner() view returns ( bool ) {
         return auditors[ auditor ].isAuditor;
     }
 
-    function _getAuditorInformation( address auditor ) internal view returns ( bool, uint256, uint256 ) {
+    function getAuditorInformation( address auditor ) external onlyOwner() view returns ( bool, uint256, uint256 ) {
         require( _hasAuditorRecord( auditor ), "No auditor record in the current store" );
 
         return 
@@ -165,7 +170,7 @@ contract AuditorStore {
      * @param index A number which should be less than or equal to the total number of approved contracts for the auditor
      * @return A number that represents the location in the contract array where the contract information is referenced by
      */
-    function _getAuditorApprovedContractIndex( address auditor, uint256 index ) internal view returns ( uint256 ) {
+    function getAuditorApprovedContractIndex( address auditor, uint256 index ) external onlyOwner() view returns ( uint256 ) {
         require( _hasAuditorRecord( auditor ),                          "There is no record of the specified auditor in the current store" );
         require( 0 < auditors[ auditor ].approvedContracts.length,      "Approved list is empty" );
         require( index <= auditors[ auditor ].approvedContracts.length, "Record does not exist" );
@@ -184,7 +189,7 @@ contract AuditorStore {
      * @param index A number which should be less than or equal to the total number of opposed contracts for the auditor
      * @return A number that represents the location in the contract array where the contract information is referenced by
      */
-    function _getAuditorOpposedContractIndex( address auditor, uint256 index ) internal view returns ( uint256 ) {
+    function getAuditorOpposedContractIndex( address auditor, uint256 index ) external onlyOwner() view returns ( uint256 ) {
         require( _hasAuditorRecord( auditor ),                          "There is no record of the specified auditor in the current store" );
         require( 0 < auditors[ auditor ].opposedContracts.length,       "Opposed list is empty" );
         require( index <= auditors[ auditor ].opposedContracts.length,  "Record does not exist" );
@@ -197,12 +202,12 @@ contract AuditorStore {
         return auditors[ auditor ].opposedContracts[ index ];
     }
 
-    function _migrate( address migrator, address auditor ) internal {
+    function migrate( address platform, address previousDatastore, address auditor ) external onlyOwner() {
         // Auditor should not exist to mitigate event spamming or possible neglectful changes to 
-        // _recursiveAuditorSearch(address) which may allow them to switch their suspended status to active
+        // _recursiveIsAuditorSearch(address) which may allow them to switch their suspended status to active
         require( !_hasAuditorRecord( auditor ), "Already in data store" );
         
-        bool isAnAuditor = _recursiveAuditorSearch( auditor );
+        bool isAnAuditor = _recursiveIsAuditorSearch( auditor, previousDatastore );
 
         if ( isAnAuditor ) {
             // Do not rewrite previous audits into each new datastore as that will eventually become too expensive
@@ -211,13 +216,13 @@ contract AuditorStore {
 
             activeAuditorCount = activeAuditorCount.add( 1 );
 
-            emit AcceptedMigration( migrator, auditor );
+            emit AcceptedMigration( platform, auditor );
         } else {
             revert( "Auditor is either suspended or has never been in the system" );
         }
     }
 
-    function _saveContractIndexForAuditor( address platform, address auditor, bool approved, uint256 index ) internal {
+    function saveContractIndexForAuditor( address platform, address auditor, bool approved, uint256 index ) external onlyOwner() {
         if ( approved ) {
             auditors[ auditor ].approvedContracts.push( index );
         } else {
@@ -242,5 +247,10 @@ contract AuditorStore {
 
         return isAnAuditor;
     }
+    
+    function linkAuditorStore( address auditorStore ) external onlyOwner() {
+        previousAuditorStore = auditorStore;
+    }
 
 }
+

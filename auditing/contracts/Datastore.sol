@@ -1,18 +1,25 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-pragma solidity 0.7.4;
+// SPDX-License-Identifier: AGPL v3
+pragma solidity ^0.8.1;
 
+import "./SafeMath.sol";
+import "./Ownable.sol";
 import "./Pausable.sol";
-import "./ContractStore.sol";
-import "./AuditorStore.sol";
-import "./DeployerStore.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./IContractStore.sol";
+import "./IAuditorStore.sol";
+import "./IDeployerStore.sol";
 
-contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
+
+contract Datastore is Pausable {
     
     using SafeMath for uint256;
 
     // Daisy chain the data stores backwards to allow recursive backwards search.
     address public previousDatastore;
+    
+    // Sub data stores
+    address public contractStore;
+    address public auditorStore;
+    address public deployerStore;
 
     string constant public version = "Demo: 1";
     
@@ -34,6 +41,18 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
         address indexed platformOwner, 
         address indexed platform, 
         address indexed auditor
+    );
+
+    event SuspendedDeployer( 
+        address indexed platformOwner, 
+        address indexed platform, 
+        address indexed deployer
+    );
+
+    event ReinstatedDeployer( 
+        address indexed platformOwner, 
+        address indexed platform, 
+        address indexed deployer
     );
 
     event RegisteredContract(
@@ -82,6 +101,8 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
     /**
      * TODO: currently the sub stores are tightly coupled with this front facing datastore, expand on the architecture to allow hotswapping
      *       of the other stores
+     * TODO: any internal contract stores that refer to _msgSender() as this API data store need to be adjusted since they are internal calls and thus
+     *       the address will be the same for the each store because they have not been implemented in a modular way
      */
     
 
@@ -94,7 +115,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      * @return Boolean value indicating if this address has ever been added as an auditor
      */
     function hasAuditorRecord( address auditor ) external view returns ( bool ) {
-        return _hasAuditorRecord( auditor );
+        return IAuditorStore( auditorStore ).hasAuditorRecord( auditor );
     }
 
     /**
@@ -105,13 +126,13 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      * @return Boolean value indicating if this address is currently a valid auditor
      */
     function isAuditor( address auditor ) external view returns ( bool ) {
-        return _isAuditor( auditor );
+        return IAuditorStore( auditorStore ).isAuditor( auditor );
     }
 
     function searchAllStoresForIsAuditor( address auditor ) external view returns ( bool ) {
         // Check in all previous stores if the latest record of them being an auditor is set to true/false
         // This is likely to be expensive so it is better to check each store manually / individually
-        return _recursiveIsAuditorSearch( auditor, previousDatastore );
+        return IAuditorStore( auditorStore ).recursiveIsAuditorSearch( auditor, previousDatastore );
     }
 
     /**
@@ -122,7 +143,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      * @return The current state of the auditor and the total number of approved contracts and the total number of opposed contracts
      */
     function getAuditorInformation( address auditor ) external view returns ( bool, uint256, uint256 ) {
-        return _getAuditorInformation( auditor );
+        return IAuditorStore( auditorStore ).getAuditorInformation( auditor );
     }
 
     /**
@@ -132,8 +153,8 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      * @return The audited contract information
      */
     function getAuditorApprovedContractInformation( address auditor, uint256 contractIndex ) external view returns ( address, address, address, address, bool, bool, bool ) {
-        uint256 contractIndex = _getAuditorApprovedContractIndex( auditor, contractIndex );
-        return _getContractInformation( contractIndex );
+        uint256 contractIndex = IAuditorStore( auditorStore ).getAuditorApprovedContractIndex( auditor, contractIndex );
+        return IContractStore( contractStore ).getContractInformation( contractIndex );
     }
 
     /**
@@ -143,8 +164,30 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      * @return The audited contract information
      */
     function getAuditorOpposedContractInformation( address auditor, uint256 contractIndex ) external view returns ( address, address, address, address, bool, bool, bool ) {
-        uint256 contractIndex = _getAuditorOpposedContractIndex( auditor, contractIndex );
-        return _getContractInformation( contractIndex );
+        uint256 contractIndex = IAuditorStore( auditorStore ).getAuditorOpposedContractIndex( auditor, contractIndex );
+        return IContractStore( contractStore ).getContractInformation( contractIndex );
+    }
+
+    /**
+     * @notice Check in the CURRENT (deployer) data store the information regarding an approved contract
+     * @param deployer 
+     * @param contractIndex A number which should be less than or equal to the total number of approved contracts for the deployer
+     * @return The audited contract information
+     */
+    function getDeployerApprovedContractInformation( address deployer, uint256 contractIndex ) external view returns ( address, address, address, address, bool, bool, bool ) {
+        uint256 contractIndex = _getDeployerApprovedContractIndex( deployer, contractIndex );
+        return IContractStore( contractStore ).getContractInformation( contractIndex );
+    }
+
+    /**
+     * @notice Check in the CURRENT (deployer) data store the information regarding an opposed contract
+     * @param deployer 
+     * @param contractIndex A number which should be less than or equal to the total number of opposed contracts for the deployer
+     * @return The audited contract information
+     */
+    function getDeployerOpposedContractInformation( address deployer, uint256 contractIndex ) external view returns ( address, address, address, address, bool, bool, bool ) {
+        uint256 contractIndex = _getDeployerOpposedContractIndex( deployer, contractIndex );
+        return IContractStore( contractStore ).getContractInformation( contractIndex );
     }
 
     /**
@@ -154,7 +197,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      * @return Boolean value indicating if this address has been addede to the store
      */
     function hasContractRecord( address contractHash ) external view returns ( bool ) {
-        return _hasContractRecord( contractHash );
+        return IContractStore( contractStore ).hasContractRecord( contractHash );
     }
 
     /**
@@ -164,7 +207,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      * @return Boolean value indicating if this address has been addede to the store
      */
     function hasContractCreationRecord( address creationHash ) external view returns ( bool ) {
-        return _hasCreationRecord( creationHash );
+        return IContractStore( contractStore ).hasCreationRecord( creationHash );
     }
 
     /**
@@ -173,13 +216,13 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      * @return The data stored regarding the contract audit
      */
     function getContractInformation( address contract_ ) external view returns ( address, address, address, address, bool, bool, bool ) {
-        return _getContractInformation( contract_ );
+        return IContractStore( contractStore ).getContractInformation( contract_ );
     }
 
     function searchAllStoresForContractDetails( address contract_ ) external view returns ( address, address, address, address, bool, bool ) {
         // Check in all previous stores if this contract has been recorded
         // This is likely to be expensive so it is better to check each store manually / individually
-        return _contractDetailsRecursiveSearch( contract_, previousDatastore );
+        return IContractStore( contractStore ).contractDetailsRecursiveSearch( contract_, previousDatastore );
     }
 
     /**
@@ -188,7 +231,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      * @return Boolean value indicating if this address has been added to the current store
      */
     function hasDeployerRecord( address deployer ) external view returns ( bool ) {
-        return _hasDeployerRecord( deployer );
+        return IDeployerStore( deployerStore ).hasDeployerRecord( deployer );
     }
 
     /**
@@ -198,7 +241,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      * @return The number of approved contracts and the total number of opposed contracts
      */
     function getDeployerInformation( address deployer ) external view returns ( bool, uint256, uint256 ) {
-        _getDeployerInformation( deployer );
+        IDeployerStore( deployerStore ).getDeployerInformation( deployer );
     }
 
     /**
@@ -209,7 +252,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      */
     function addAuditor( address platformOwner, address auditor ) external onlyOwner() whenNotPaused() {
         require( activeStore, "Store has been deactivated" );
-        _addAuditor( platformOwner, _msgSender(), auditor );
+        IAuditorStore( auditorStore ).addAuditor( platformOwner, _msgSender(), auditor );
         emit AddedAuditor( platformOwner, msg.sender, auditor );
     }
 
@@ -223,7 +266,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      */
     function suspendAuditor( address platformOwner, address auditor ) external onlyOwner() {
         require( activeStore, "Store has been deactivated" );
-        _suspendAuditor( platformOwner, _msgSender(), auditor );
+        IAuditorStore( auditorStore ).suspendAuditor( platformOwner, _msgSender(), auditor );
         emit SuspendedAuditor( platformOwner, msg.sender, auditor );
     }
 
@@ -235,12 +278,29 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
      */
     function reinstateAuditor( address platformOwner, address auditor ) external onlyOwner() whenNotPaused() {
         require( activeStore, "Store has been deactivated" );
-        _reinstateAuditor( platformOwner, _msgSender(), auditor );
+        IAuditorStore( auditorStore ).reinstateAuditor( platformOwner, _msgSender(), auditor );
         emit ReinstatedAuditor( platformOwner, msg.sender, auditor );
     }
 
-    function migrateAuditor( address migrator, address auditor ) external onlyOwner() {
-        _migrate( migrator, auditor );
+    /**
+     * @notice Revoke permissions from the auditor
+     * @param platformOwner the owner of the platform
+     * @param deployer The entity that is/was deemed as someone who has deployed contract(s)
+     */
+    function suspendDeployer( address platformOwner, address deployer ) external onlyOwner() {
+        require( activeStore, "Store has been deactivated" );
+        IDeployerStore( deployerStore ).suspendDeployer( platformOwner, _msgSender(), deployer );
+        emit SuspendedDeployer( platformOwner, msg.sender, deployer );
+    }
+
+    function reinstateDeployer( address platformOwner, address deployer ) external onlyOwner() whenNotPaused() {
+        require( activeStore, "Store has been deactivated" );
+        IDeployerStore( deployerStore ).reinstateDeployer( platformOwner, _msgSender(), deployer );
+        emit ReinstatedDeployer( platformOwner, msg.sender, deployer );
+    }
+
+    function migrateAuditor( address platform, address auditor ) external onlyOwner() {
+        IAuditorStore( auditorStore ).migrate( platform, previousDatastore, auditor );
     }
 
     function register( address contract_, address deployer ) external onlyOwner() whenNotPaused() {
@@ -250,8 +310,8 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
         assembly { size:= extcodesize( contract_ ) }
         require( size > 0,  "Contract argument is not a valid contract address" );
         
-        _registerContract( _msgSender(), contract_, deployer );
-        _addDeployer( _msgSender(), deployer );
+        IContractStore( contractStore ).registerContract( _msgSender(), contract_, deployer );
+        IDeployerStore( deployerStore ).addDeployer( _msgSender(), deployer );
 
         emit RegisteredContract( contract_, deployer );
     }
@@ -259,7 +319,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
     function setAuditor( address contract_, address auditor ) external onlyOwner() whenNotPaused() {
         require( activeStore, "Store has been deactivated" );
 
-        ( , , , , audited, , ) = _getContractInformation( contract_ );
+        ( , , , , audited, , ) = IContractStore( contractStore ).getContractInformation( contract_ );
 
         require( !audited, "Cannot make changes post audit" );
 
@@ -267,7 +327,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
         require( _hasAuditorRecord( auditor ),  "No auditor record in the current store" );
         require( _isAuditor( auditor ),         "Auditor has been suspended" );
 
-        _setContractAuditor( _msgSender(), contract_, auditor );
+        IContractStore( contractStore ).setContractAuditor( _msgSender(), contract_, auditor );
 
         emit SetAuditor( contract_, auditor );
     }
@@ -275,7 +335,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
     function confirmRegistration( address contract_, address deployer, address creationHash, address auditor ) external onlyOwner() whenNotPaused() {
         require( activeStore, "Store has been deactivated" );
 
-        ( auditor_, deployer_, , , audited, , ) = _getContractInformation( contract_ );
+        ( auditor_, deployer_, , , audited, , ) = IContractStore( contractStore ).getContractInformation( contract_ );
 
         require( !audited,                      "Cannot make changes post audit" );
 
@@ -286,7 +346,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
         require( auditor_ == auditor,           "The auditor attempting to confirm the hash is not the same as the auditor of the contract" );
         require( deployer_ == deployer,         "Deployers do not match in the store" );
 
-        _setContractCreationHash( _msgSender(), contract_, creationHash );
+        IContractStore( contractStore ).setContractCreationHash( _msgSender(), contract_, creationHash );
 
         emit ConfirmedRegistration( contract_, deployer, creationHash, auditor );
     }
@@ -299,7 +359,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
     function approveAudit( address contract_, address auditor ) external onlyOwner() whenNotPaused() {
         require( activeStore, "Store has been deactivated" );
 
-        ( auditor_, , , , audited, , confirmedHash ) = _getContractInformation( contract_ );
+        ( auditor_, , , , audited, , confirmedHash ) = IContractStore( contractStore ).getContractInformation( contract_ );
 
         require( !audited,                      "Cannot make changes post audit" );
 
@@ -312,12 +372,12 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
         // There is only 1 line which is different and that is because it is not the job of the platform (the API) to decide which state
         // is passed to the store
         bool approved = true;
-        uint256 contractIndex = _getContractIndex( contract_ );
+        uint256 contractIndex = IContractStore( contractStore ).getContractIndex( contract_ );
 
         _setContractApproval( _msgSender(), contract_, approved );
 
-        _saveContractIndexForAuditor( _msgSender(), auditor, approved, contractIndex );
-        _saveContractIndexForDeplyer( _msgSender(), deployer, approved, contractIndex );
+        IAuditorStore( auditorStore ).saveContractIndexForAuditor( _msgSender(), auditor, approved, contractIndex );
+        IContractStore( contractStore ).saveContractIndexForDeplyer( _msgSender(), deployer, approved, contractIndex );
 
         emit ApprovedAudit( msg.sender, contract_, auditor );
     }
@@ -330,7 +390,7 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
     function opposeAudit( address contract_, address auditor ) external onlyOwner() whenNotPaused() {
         require( activeStore, "Store has been deactivated" );
 
-        ( auditor_, , , , audited, , confirmedHash ) = _getContractInformation( contract_ );
+        ( auditor_, , , , audited, , confirmedHash ) = IContractStore( contractStore ).getContractInformation( contract_ );
 
         require( !audited,                      "Cannot make changes post audit" );
 
@@ -343,12 +403,12 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
         // There is only 1 line which is different and that is because it is not the job of the platform (the API) to decide which state
         // is passed to the store
         bool approved = false;
-        uint256 contractIndex = _getContractIndex( contract_ );
+        uint256 contractIndex = IContractStore( contractStore ).getContractIndex( contract_ );
 
-        _setContractApproval( _msgSender(), contract_, approved );
+        IContractStore( contractStore ).setContractApproval( _msgSender(), contract_, approved );
 
-        _saveContractIndexForAuditor( _msgSender(), auditor, approved, contractIndex );
-        _saveContractIndexForDeplyer( _msgSender(), deployer, approved, contractIndex );
+        IAuditorStore( auditorStore ).saveContractIndexForAuditor( _msgSender(), auditor, approved, contractIndex );
+        IContractStore( contractStore ).saveContractIndexForDeplyer( _msgSender(), deployer, approved, contractIndex );
 
         emit OpposedAudit( msg.sender, contract_, auditor );
     }
@@ -358,8 +418,10 @@ contract Datastore is ContractStore, AuditorStore, DeployerStore, Pausable {
         
         activeStore = false;
         previousDatastore = datastore;
+        // TODO: handle sub store transfer here
 
         emit LinkedDataStore( platformOwner, _msgSender(), previousDatastore );
     }
 }
+
 
