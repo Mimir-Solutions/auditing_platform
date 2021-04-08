@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ERC777",
+  "sourceName": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/token/ERC777/ERC777.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220ea022eb4091e96e94f795ec2cb536f1b7ac89e0385db55ae4204cf58627f4caa64736f6c63430007050033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220ea022eb4091e96e94f795ec2cb536f1b7ac89e0385db55ae4204cf58627f4caa64736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

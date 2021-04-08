@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "SignedSafeMath",
+  "sourceName": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/math/SignedSafeMath.sol",
+  "abi": [],
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122010d8692d5fbf35f7bf5ae5f6294339da6afeaa5b02031feeb144d9a7e5dbab0964736f6c63430007050033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122010d8692d5fbf35f7bf5ae5f6294339da6afeaa5b02031feeb144d9a7e5dbab0964736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

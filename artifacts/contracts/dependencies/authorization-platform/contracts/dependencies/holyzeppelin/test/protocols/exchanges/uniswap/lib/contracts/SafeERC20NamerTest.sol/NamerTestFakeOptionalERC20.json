@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "NamerTestFakeOptionalERC20",
+  "sourceName": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/test/protocols/exchanges/uniswap/lib/contracts/SafeERC20NamerTest.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220b2d4f6b3af440441c4da27aaa429ede5a220002330266bae061d9796a5c3c67b64736f6c63430007050033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220b2d4f6b3af440441c4da27aaa429ede5a220002330266bae061d9796a5c3c67b64736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

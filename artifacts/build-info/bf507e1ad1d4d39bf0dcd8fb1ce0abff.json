@@ -1,0 +1,105 @@
+{
+  "id": "bf507e1ad1d4d39bf0dcd8fb1ce0abff",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.7.5",
+  "solcLongVersion": "0.7.5+commit.eb77ed08",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/datatypes/primitives/SafeCast.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity 0.7.5;\r\n\r\n\r\n// /**\r\n//  * @dev Wrappers over Solidity's uintXX/intXX casting operators with added overflow\r\n//  * checks.\r\n//  *\r\n//  * Downcasting from uint256/int256 in Solidity does not revert on overflow. This can\r\n//  * easily result in undesired exploitation or bugs, since developers usually\r\n//  * assume that overflows raise errors. `SafeCast` restores this intuition by\r\n//  * reverting the transaction when such an operation overflows.\r\n//  *\r\n//  * Using this library instead of the unchecked operations eliminates an entire\r\n//  * class of bugs, so it's recommended to use it always.\r\n//  *\r\n//  * Can be combined with {SafeMath} and {SignedSafeMath} to extend it to smaller types, by performing\r\n//  * all math on `uint256` and `int256` and then downcasting.\r\n//  */\r\nlibrary SafeCast {\r\n\r\n//     /**\r\n//      * @dev Returns the downcasted uint128 from uint256, reverting on\r\n//      * overflow (when the input is greater than largest uint128).\r\n//      *\r\n//      * Counterpart to Solidity's `uint128` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must fit into 128 bits\r\n//      */\r\n//     function toUint128(uint256 value) internal pure returns (uint128) {\r\n//         require(value < 2**128, \"SafeCast: value doesn\\'t fit in 128 bits\");\r\n//         return uint128(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the downcasted uint64 from uint256, reverting on\r\n//      * overflow (when the input is greater than largest uint64).\r\n//      *\r\n//      * Counterpart to Solidity's `uint64` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must fit into 64 bits\r\n//      */\r\n//     function toUint64(uint256 value) internal pure returns (uint64) {\r\n//         require(value < 2**64, \"SafeCast: value doesn\\'t fit in 64 bits\");\r\n//         return uint64(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the downcasted uint32 from uint256, reverting on\r\n//      * overflow (when the input is greater than largest uint32).\r\n//      *\r\n//      * Counterpart to Solidity's `uint32` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must fit into 32 bits\r\n//      */\r\n//     function toUint32(uint256 value) internal pure returns (uint32) {\r\n//         require(value < 2**32, \"SafeCast: value doesn\\'t fit in 32 bits\");\r\n//         return uint32(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the downcasted uint16 from uint256, reverting on\r\n//      * overflow (when the input is greater than largest uint16).\r\n//      *\r\n//      * Counterpart to Solidity's `uint16` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must fit into 16 bits\r\n//      */\r\n//     function toUint16(uint256 value) internal pure returns (uint16) {\r\n//         require(value < 2**16, \"SafeCast: value doesn\\'t fit in 16 bits\");\r\n//         return uint16(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the downcasted uint8 from uint256, reverting on\r\n//      * overflow (when the input is greater than largest uint8).\r\n//      *\r\n//      * Counterpart to Solidity's `uint8` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must fit into 8 bits.\r\n//      */\r\n//     function toUint8(uint256 value) internal pure returns (uint8) {\r\n//         require(value < 2**8, \"SafeCast: value doesn\\'t fit in 8 bits\");\r\n//         return uint8(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Converts a signed int256 into an unsigned uint256.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must be greater than or equal to 0.\r\n//      */\r\n//     function toUint256(int256 value) internal pure returns (uint256) {\r\n//         require(value >= 0, \"SafeCast: value must be positive\");\r\n//         return uint256(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the downcasted int128 from int256, reverting on\r\n//      * overflow (when the input is less than smallest int128 or\r\n//      * greater than largest int128).\r\n//      *\r\n//      * Counterpart to Solidity's `int128` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must fit into 128 bits\r\n//      *\r\n//      * _Available since v3.1._\r\n//      */\r\n//     function toInt128(int256 value) internal pure returns (int128) {\r\n//         require(value >= -2**127 && value < 2**127, \"SafeCast: value doesn\\'t fit in 128 bits\");\r\n//         return int128(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the downcasted int64 from int256, reverting on\r\n//      * overflow (when the input is less than smallest int64 or\r\n//      * greater than largest int64).\r\n//      *\r\n//      * Counterpart to Solidity's `int64` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must fit into 64 bits\r\n//      *\r\n//      * _Available since v3.1._\r\n//      */\r\n//     function toInt64(int256 value) internal pure returns (int64) {\r\n//         require(value >= -2**63 && value < 2**63, \"SafeCast: value doesn\\'t fit in 64 bits\");\r\n//         return int64(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the downcasted int32 from int256, reverting on\r\n//      * overflow (when the input is less than smallest int32 or\r\n//      * greater than largest int32).\r\n//      *\r\n//      * Counterpart to Solidity's `int32` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must fit into 32 bits\r\n//      *\r\n//      * _Available since v3.1._\r\n//      */\r\n//     function toInt32(int256 value) internal pure returns (int32) {\r\n//         require(value >= -2**31 && value < 2**31, \"SafeCast: value doesn\\'t fit in 32 bits\");\r\n//         return int32(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the downcasted int16 from int256, reverting on\r\n//      * overflow (when the input is less than smallest int16 or\r\n//      * greater than largest int16).\r\n//      *\r\n//      * Counterpart to Solidity's `int16` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must fit into 16 bits\r\n//      *\r\n//      * _Available since v3.1._\r\n//      */\r\n//     function toInt16(int256 value) internal pure returns (int16) {\r\n//         require(value >= -2**15 && value < 2**15, \"SafeCast: value doesn\\'t fit in 16 bits\");\r\n//         return int16(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the downcasted int8 from int256, reverting on\r\n//      * overflow (when the input is less than smallest int8 or\r\n//      * greater than largest int8).\r\n//      *\r\n//      * Counterpart to Solidity's `int8` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must fit into 8 bits.\r\n//      *\r\n//      * _Available since v3.1._\r\n//      */\r\n//     function toInt8(int256 value) internal pure returns (int8) {\r\n//         require(value >= -2**7 && value < 2**7, \"SafeCast: value doesn\\'t fit in 8 bits\");\r\n//         return int8(value);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Converts an unsigned uint256 into a signed int256.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - input must be less than or equal to maxInt256.\r\n//      */\r\n//     function toInt256(uint256 value) internal pure returns (int256) {\r\n//         require(value < 2**255, \"SafeCast: value doesn't fit in an int256\");\r\n//         return int256(value);\r\n//     }\r\n}\r\n"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/datatypes/primitives/SafeCast.sol": {
+        "SafeCast": {
+          "abi": [],
+          "evm": {
+            "bytecode": {
+              "generatedSources": [],
+              "linkReferences": {},
+              "object": "60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122049f2f2464fb53e9a3e965f2f46d5980671a15a9161955a1ba42195d432a8018f64736f6c63430007050033",
+              "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x49 CALLCODE CALLCODE CHAINID 0x4F 0xB5 RETURNDATACOPY SWAP11 RETURNDATACOPY SWAP7 0x5F 0x2F CHAINID 0xD5 SWAP9 MOD PUSH18 0xA15A9161955A1BA42195D432A8018F64736F PUSH13 0x63430007050033000000000000 ",
+              "sourceMap": "831:6486:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+              "generatedSources": [],
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122049f2f2464fb53e9a3e965f2f46d5980671a15a9161955a1ba42195d432a8018f64736f6c63430007050033",
+              "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x49 CALLCODE CALLCODE CHAINID 0x4F 0xB5 RETURNDATACOPY SWAP11 RETURNDATACOPY SWAP7 0x5F 0x2F CHAINID 0xD5 SWAP9 MOD PUSH18 0xA15A9161955A1BA42195D432A8018F64736F PUSH13 0x63430007050033000000000000 ",
+              "sourceMap": "831:6486:0:-:0;;;;;;;;"
+            },
+            "methodIdentifiers": {}
+          }
+        }
+      }
+    },
+    "sources": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/datatypes/primitives/SafeCast.sol": {
+        "ast": {
+          "absolutePath": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/datatypes/primitives/SafeCast.sol",
+          "exportedSymbols": {
+            "SafeCast": [
+              2
+            ]
+          },
+          "id": 3,
+          "license": "MIT",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                "0.7",
+                ".5"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "33:22:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "contractDependencies": [],
+              "contractKind": "library",
+              "fullyImplemented": true,
+              "id": 2,
+              "linearizedBaseContracts": [
+                2
+              ],
+              "name": "SafeCast",
+              "nodeType": "ContractDefinition",
+              "nodes": [],
+              "scope": 3,
+              "src": "831:6486:0"
+            }
+          ],
+          "src": "33:7286:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}

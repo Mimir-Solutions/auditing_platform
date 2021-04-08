@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "AuditRepository",
+  "sourceName": "contracts/repositories/AuditRepository.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220cbb5e3310325263a3c176a31dff5c257a7728f132efd37a78494c2477f93649964736f6c63430007050033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220cbb5e3310325263a3c176a31dff5c257a7728f132efd37a78494c2477f93649964736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

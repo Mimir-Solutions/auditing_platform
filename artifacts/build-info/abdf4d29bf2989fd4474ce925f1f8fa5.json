@@ -1,0 +1,155 @@
+{
+  "id": "abdf4d29bf2989fd4474ce925f1f8fa5",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.7.5",
+  "solcLongVersion": "0.7.5+commit.eb77ed08",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/tokens/AuditRecordERC1155.sol": {
+        "content": "// SPDX-License-Identifier: AGPL-3.0-or-later\r\npragma solidity 0.7.5;\r\n\r\n/**\r\n * @title Defines the standard for on-chain recording of audits as a ERC1155 compaitbile NFT token.\r\n *  Intended to act a repository for audit infromation for a contract that would be a token holder\r\n *  for the specific token ID containing infromation abot its audit from the auditing entity \r\n *  represented by this token.\r\n */\r\ncontract AuditRecordERC1155 {\r\n\r\n  /**\r\n   * @dev \r\n   */\r\n  constructor() {\r\n\r\n  }\r\n}"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/tokens/AuditRecordERC1155.sol": {
+        "AuditRecordERC1155": {
+          "abi": [
+            {
+              "inputs": [],
+              "stateMutability": "nonpayable",
+              "type": "constructor"
+            }
+          ],
+          "evm": {
+            "bytecode": {
+              "generatedSources": [],
+              "linkReferences": {},
+              "object": "6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212205f0409c7159328b2f7d3478aa1d47921331c806455b25d6daef491c083089b8864736f6c63430007050033",
+              "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x3F DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x5F DIV MULMOD 0xC7 ISZERO SWAP4 0x28 0xB2 0xF7 0xD3 SELFBALANCE DUP11 LOG1 0xD4 PUSH26 0x21331C806455B25D6DAEF491C083089B8864736F6C6343000705 STOP CALLER ",
+              "sourceMap": "411:86:0:-:0;;;472:22;;;;;;;;;;411:86;;;;;;"
+            },
+            "deployedBytecode": {
+              "generatedSources": [],
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "6080604052600080fdfea26469706673582212205f0409c7159328b2f7d3478aa1d47921331c806455b25d6daef491c083089b8864736f6c63430007050033",
+              "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x5F DIV MULMOD 0xC7 ISZERO SWAP4 0x28 0xB2 0xF7 0xD3 SELFBALANCE DUP11 LOG1 0xD4 PUSH26 0x21331C806455B25D6DAEF491C083089B8864736F6C6343000705 STOP CALLER ",
+              "sourceMap": "411:86:0:-:0;;;;;"
+            },
+            "methodIdentifiers": {}
+          }
+        }
+      }
+    },
+    "sources": {
+      "contracts/tokens/AuditRecordERC1155.sol": {
+        "ast": {
+          "absolutePath": "contracts/tokens/AuditRecordERC1155.sol",
+          "exportedSymbols": {
+            "AuditRecordERC1155": [
+              8
+            ]
+          },
+          "id": 9,
+          "license": "AGPL-3.0-or-later",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                "0.7",
+                ".5"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "47:22:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "contractDependencies": [],
+              "contractKind": "contract",
+              "documentation": {
+                "id": 2,
+                "nodeType": "StructuredDocumentation",
+                "src": "73:336:0",
+                "text": " @title Defines the standard for on-chain recording of audits as a ERC1155 compaitbile NFT token.\n  Intended to act a repository for audit infromation for a contract that would be a token holder\n  for the specific token ID containing infromation abot its audit from the auditing entity \n  represented by this token."
+              },
+              "fullyImplemented": true,
+              "id": 8,
+              "linearizedBaseContracts": [
+                8
+              ],
+              "name": "AuditRecordERC1155",
+              "nodeType": "ContractDefinition",
+              "nodes": [
+                {
+                  "body": {
+                    "id": 6,
+                    "nodeType": "Block",
+                    "src": "486:8:0",
+                    "statements": []
+                  },
+                  "documentation": {
+                    "id": 3,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "446:22:0",
+                    "text": " @dev "
+                  },
+                  "id": 7,
+                  "implemented": true,
+                  "kind": "constructor",
+                  "modifiers": [],
+                  "name": "",
+                  "nodeType": "FunctionDefinition",
+                  "parameters": {
+                    "id": 4,
+                    "nodeType": "ParameterList",
+                    "parameters": [],
+                    "src": "483:2:0"
+                  },
+                  "returnParameters": {
+                    "id": 5,
+                    "nodeType": "ParameterList",
+                    "parameters": [],
+                    "src": "486:0:0"
+                  },
+                  "scope": 8,
+                  "src": "472:22:0",
+                  "stateMutability": "nonpayable",
+                  "virtual": false,
+                  "visibility": "public"
+                }
+              ],
+              "scope": 9,
+              "src": "411:86:0"
+            }
+          ],
+          "src": "47:450:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "id": "9adeb99e90bfbf1ba07c504ae8c5b324",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.7.5",
+  "solcLongVersion": "0.7.5+commit.eb77ed08",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/token/ERC20/events/ERC20SelfListingUniswapEvents.sol": {
+        "content": "// // SPDX-License-Identifier: AGPL-3.0-or-later\r\npragma solidity 0.7.5;\r\n\r\n// import \"hardhat/console.sol\";\r\n\r\nlibrary ERC20SelfListingUniswapEvents {\r\n//     // Event to alert users that the UniswapV2 factory address has been change.\r\n//     event UniswapV2FactoryAddressChanged( address indexed previousUniswapV2FactoryAddress, address indexed newUniswapV2FactoryAddress);\r\n\r\n//     // Event to alert users that the UniswapV2 router address has been changed.\r\n//     event UniswapV2RouterAddressChanged( address indexed previousUniswapV2RouterAddress, address indexed newUniswapV2RouterAddress);\r\n\r\n//     // Event to alert users that the ERIS WETH dex pair has been created.\r\n//     event UniswapV2ERISWETHDEXPairCreated( address indexed uniswapV2ErisWETHDEXPairdAddress, address indexed erisAddress, address indexed wethAddress );\r\n\r\n//     // Event to alert users that the address for the ERIS WETH dex pair address has changed.\r\n//     event UniswapV2ERISWETHPairAddressChanged( address indexed previousUniswapV2ErisWETHAddress, address indexed newUniswapV2ErisWETHPairAddress);\r\n}"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/token/ERC20/events/ERC20SelfListingUniswapEvents.sol": {
+        "ERC20SelfListingUniswapEvents": {
+          "abi": [],
+          "evm": {
+            "bytecode": {
+              "generatedSources": [],
+              "linkReferences": {},
+              "object": "60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122081a28298de5c20513a4f589e2674c7de6bd12e4c581809d1ee871d5367282d7664736f6c63430007050033",
+              "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 DUP2 LOG2 DUP3 SWAP9 0xDE 0x5C KECCAK256 MLOAD GASPRICE 0x4F PC SWAP15 0x26 PUSH21 0xC7DE6BD12E4C581809D1EE871D5367282D7664736F PUSH13 0x63430007050033000000000000 ",
+              "sourceMap": "112:976:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+              "generatedSources": [],
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122081a28298de5c20513a4f589e2674c7de6bd12e4c581809d1ee871d5367282d7664736f6c63430007050033",
+              "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 DUP2 LOG2 DUP3 SWAP9 0xDE 0x5C KECCAK256 MLOAD GASPRICE 0x4F PC SWAP15 0x26 PUSH21 0xC7DE6BD12E4C581809D1EE871D5367282D7664736F PUSH13 0x63430007050033000000000000 ",
+              "sourceMap": "112:976:0:-:0;;;;;;;;"
+            },
+            "methodIdentifiers": {}
+          }
+        }
+      }
+    },
+    "sources": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/token/ERC20/events/ERC20SelfListingUniswapEvents.sol": {
+        "ast": {
+          "absolutePath": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/token/ERC20/events/ERC20SelfListingUniswapEvents.sol",
+          "exportedSymbols": {
+            "ERC20SelfListingUniswapEvents": [
+              2
+            ]
+          },
+          "id": 3,
+          "license": "AGPL-3.0-or-later",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                "0.7",
+                ".5"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "50:22:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "contractDependencies": [],
+              "contractKind": "library",
+              "fullyImplemented": true,
+              "id": 2,
+              "linearizedBaseContracts": [
+                2
+              ],
+              "name": "ERC20SelfListingUniswapEvents",
+              "nodeType": "ContractDefinition",
+              "nodes": [],
+              "scope": 3,
+              "src": "112:976:0"
+            }
+          ],
+          "src": "50:1038:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}

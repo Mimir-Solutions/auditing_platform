@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Timelock",
+  "sourceName": "contracts/dependencies/holyzeppelin/contracts/security/access/temporal/Timelock.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220c4c83007f80b6eec910a6df5348ec22e5399e15d303662ad040b2bd31231368d64736f6c63430007050033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220c4c83007f80b6eec910a6df5348ec22e5399e15d303662ad040b2bd31231368d64736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

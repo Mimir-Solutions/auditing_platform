@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "FixedPoint",
+  "sourceName": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/protocols/exchanges/uniswap/libraries/FixedPoint.sol",
+  "abi": [],
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122092fdc529b8b9e236b62fff33b80adb8b6bfef01598b741cd50b480d5301f515064736f6c63430007050033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122092fdc529b8b9e236b62fff33b80adb8b6bfef01598b741cd50b480d5301f515064736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

@@ -1,0 +1,48 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "LibNote",
+  "sourceName": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/token/ERC20/examples/stablecoins/regulated/dai/libraries/LibNote.sol",
+  "abi": [
+    {
+      "anonymous": true,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes4",
+          "name": "sig",
+          "type": "bytes4"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "usr",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "arg1",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "arg2",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "LogNote",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212209be9bf60189db55db38cf46fd8f28bae65f1906effb2c47bd2a0e23bec16b3de64736f6c63430007050033",
+  "deployedBytecode": "0x6080604052600080fdfea26469706673582212209be9bf60189db55db38cf46fd8f28bae65f1906effb2c47bd2a0e23bec16b3de64736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

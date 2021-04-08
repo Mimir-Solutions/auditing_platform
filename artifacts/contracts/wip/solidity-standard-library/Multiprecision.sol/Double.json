@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Double",
+  "sourceName": "contracts/wip/solidity-standard-library/Multiprecision.sol",
+  "abi": [],
+  "bytecode": "0x608060405260026000556064600155348015601957600080fd5b50603f8060276000396000f3fe6080604052600080fdfea2646970667358221220b407da85940b5cd2215e227fab53dcc744ebda6ab252b5d32408c30a5a810f7564736f6c63430007050033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220b407da85940b5cd2215e227fab53dcc744ebda6ab252b5d32408c30a5a810f7564736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

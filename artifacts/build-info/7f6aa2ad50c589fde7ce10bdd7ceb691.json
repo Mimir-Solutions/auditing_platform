@@ -1,0 +1,105 @@
+{
+  "id": "7f6aa2ad50c589fde7ce10bdd7ceb691",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.7.5",
+  "solcLongVersion": "0.7.5+commit.eb77ed08",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/GSN/GSNRecipientERC20Fee.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity 0.7.5;\r\n\r\n// import \"hardhat/console.sol\";\r\n\r\n// import \"./GSNRecipient.sol\";\r\n// import \"../utils/math/SafeMath.sol\";\r\n// import \"../access/Ownable.sol\";\r\n// import \"../token/ERC20/SafeERC20.sol\";\r\n// import \"../token/ERC20/ERC20.sol\";\r\n\r\n// /**\r\n//  * @dev A xref:ROOT:gsn-strategies.adoc#gsn-strategies[GSN strategy] that charges transaction fees in a special purpose ERC20\r\n//  * token, which we refer to as the gas payment token. The amount charged is exactly the amount of Ether charged to the\r\n//  * recipient. This means that the token is essentially pegged to the value of Ether.\r\n//  *\r\n//  * The distribution strategy of the gas payment token to users is not defined by this contract. It's a mintable token\r\n//  * whose only minter is the recipient, so the strategy must be implemented in a derived contract, making use of the\r\n//  * internal {_mint} function.\r\n//  */\r\ncontract GSNRecipientERC20Fee \r\n    // is GSNRecipient \r\n{\r\n//     using SafeERC20 for __unstable__ERC20Owned;\r\n//     using SafeMath for uint256;\r\n\r\n//     enum GSNRecipientERC20FeeErrorCodes {\r\n//         INSUFFICIENT_BALANCE\r\n//     }\r\n\r\n//     __unstable__ERC20Owned private _token;\r\n\r\n//     /**\r\n//      * @dev The arguments to the constructor are the details that the gas payment token will have: `name` and `symbol`. `decimals` is hard-coded to 18.\r\n//      */\r\n//     constructor(string memory name, string memory symbol) {\r\n//         _token = new __unstable__ERC20Owned(name, symbol);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the gas payment token.\r\n//      */\r\n//     function token() public view returns (IERC20) {\r\n//         return IERC20(_token);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Internal function that mints the gas payment token. Derived contracts should expose this function in their public API, with proper access control mechanisms.\r\n//      */\r\n//     function _mint(address account, uint256 amount) internal virtual {\r\n//         _token.mint(account, amount);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Ensures that only users with enough gas payment token balance can have transactions relayed through the GSN.\r\n//      */\r\n//     function acceptRelayedCall(\r\n//         address,\r\n//         address from,\r\n//         bytes memory,\r\n//         uint256 transactionFee,\r\n//         uint256 gasPrice,\r\n//         uint256,\r\n//         uint256,\r\n//         bytes memory,\r\n//         uint256 maxPossibleCharge\r\n//     )\r\n//         public\r\n//         view\r\n//         virtual\r\n//         override\r\n//         returns (uint256, bytes memory)\r\n//     {\r\n//         if (_token.balanceOf(from) < maxPossibleCharge) {\r\n//             return _rejectRelayedCall(uint256(GSNRecipientERC20FeeErrorCodes.INSUFFICIENT_BALANCE));\r\n//         }\r\n\r\n//         return _approveRelayedCall(abi.encode(from, maxPossibleCharge, transactionFee, gasPrice));\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Implements the precharge to the user. The maximum possible charge (depending on gas limit, gas price, and\r\n//      * fee) will be deducted from the user balance of gas payment token. Note that this is an overestimation of the\r\n//      * actual charge, necessary because we cannot predict how much gas the execution will actually need. The remainder\r\n//      * is returned to the user in {_postRelayedCall}.\r\n//      */\r\n//     function _preRelayedCall(bytes memory context) internal virtual override returns ( bytes32 ) {\r\n//         (address from, uint256 maxPossibleCharge) = abi.decode(context, (address, uint256));\r\n\r\n//         // The maximum token charge is pre-charged from the user\r\n//         _token.safeTransferFrom(from, address(this), maxPossibleCharge);\r\n\r\n//         return 0;\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns to the user the extra amount that was previously charged, once the actual execution cost is known.\r\n//      */\r\n//     function _postRelayedCall(bytes memory context, bool, uint256 actualCharge, bytes32) internal virtual override {\r\n//         (address from, uint256 maxPossibleCharge, uint256 transactionFee, uint256 gasPrice) =\r\n//             abi.decode(context, (address, uint256, uint256, uint256));\r\n\r\n//         // actualCharge is an _estimated_ charge, which assumes postRelayedCall will use all available gas.\r\n//         // This implementation's gas cost can be roughly estimated as 10k gas, for the two SSTORE operations in an\r\n//         // ERC20 transfer.\r\n//         uint256 overestimation = _computeCharge(_POST_RELAYED_CALL_MAX_GAS.sub(10000), gasPrice, transactionFee);\r\n//         actualCharge = actualCharge.sub(overestimation);\r\n\r\n//         // After the relayed call has been executed and the actual charge estimated, the excess pre-charge is returned\r\n//         _token.safeTransfer(from, maxPossibleCharge.sub(actualCharge));\r\n//     }\r\n// }\r\n\r\n// /**\r\n//  * @title __unstable__ERC20Owned\r\n//  * @dev An ERC20 token owned by another contract, which has minting permissions and can use transferFrom to receive\r\n//  * anyone's tokens. This contract is an internal helper for GSNRecipientERC20Fee, and should not be used\r\n//  * outside of this context.\r\n//  */\r\n// // solhint-disable-next-line contract-name-camelcase\r\n// contract __unstable__ERC20Owned is ERC20, Ownable {\r\n//     uint256 private constant _UINT256_MAX = 2**256 - 1;\r\n\r\n//     constructor(string memory name, string memory symbol) ERC20(name, symbol) { }\r\n\r\n//     // The owner (GSNRecipientERC20Fee) can mint tokens\r\n//     function mint(address account, uint256 amount) public onlyOwner {\r\n//         _mint(account, amount);\r\n//     }\r\n\r\n//     // The owner has 'infinite' allowance for all token holders\r\n//     function allowance(address tokenOwner, address spender) public view override returns (uint256) {\r\n//         if (spender == owner()) {\r\n//             return _UINT256_MAX;\r\n//         } else {\r\n//             return super.allowance(tokenOwner, spender);\r\n//         }\r\n//     }\r\n\r\n//     // Allowance for the owner cannot be changed (it is always 'infinite')\r\n//     function _approve(address tokenOwner, address spender, uint256 value) internal override {\r\n//         if (spender == owner()) {\r\n//             return;\r\n//         } else {\r\n//             super._approve(tokenOwner, spender, value);\r\n//         }\r\n//     }\r\n\r\n//     function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {\r\n//         if (recipient == owner()) {\r\n//             _transfer(sender, recipient, amount);\r\n//             return true;\r\n//         } else {\r\n//             return super.transferFrom(sender, recipient, amount);\r\n//         }\r\n//     }\r\n}\r\n"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/GSN/GSNRecipientERC20Fee.sol": {
+        "GSNRecipientERC20Fee": {
+          "abi": [],
+          "evm": {
+            "bytecode": {
+              "generatedSources": [],
+              "linkReferences": {},
+              "object": "6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea264697066735822122009b9d2f4a89e311b1022c3630f73c73690926602772e61a82121db85825112ce64736f6c63430007050033",
+              "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x3F DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 MULMOD 0xB9 0xD2 DELEGATECALL 0xA8 SWAP15 BALANCE SHL LT 0x22 0xC3 PUSH4 0xF73C736 SWAP1 SWAP3 PUSH7 0x2772E61A82121 0xDB DUP6 DUP3 MLOAD SLT 0xCE PUSH5 0x736F6C6343 STOP SMOD SDIV STOP CALLER ",
+              "sourceMap": "930:5727:0:-:0;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+              "generatedSources": [],
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "6080604052600080fdfea264697066735822122009b9d2f4a89e311b1022c3630f73c73690926602772e61a82121db85825112ce64736f6c63430007050033",
+              "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 MULMOD 0xB9 0xD2 DELEGATECALL 0xA8 SWAP15 BALANCE SHL LT 0x22 0xC3 PUSH4 0xF73C736 SWAP1 SWAP3 PUSH7 0x2772E61A82121 0xDB DUP6 DUP3 MLOAD SLT 0xCE PUSH5 0x736F6C6343 STOP SMOD SDIV STOP CALLER ",
+              "sourceMap": "930:5727:0:-:0;;;;;"
+            },
+            "methodIdentifiers": {}
+          }
+        }
+      }
+    },
+    "sources": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/GSN/GSNRecipientERC20Fee.sol": {
+        "ast": {
+          "absolutePath": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/GSN/GSNRecipientERC20Fee.sol",
+          "exportedSymbols": {
+            "GSNRecipientERC20Fee": [
+              2
+            ]
+          },
+          "id": 3,
+          "license": "MIT",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                "0.7",
+                ".5"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "33:22:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "contractDependencies": [],
+              "contractKind": "contract",
+              "fullyImplemented": true,
+              "id": 2,
+              "linearizedBaseContracts": [
+                2
+              ],
+              "name": "GSNRecipientERC20Fee",
+              "nodeType": "ContractDefinition",
+              "nodes": [],
+              "scope": 3,
+              "src": "930:5727:0"
+            }
+          ],
+          "src": "33:6626:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}

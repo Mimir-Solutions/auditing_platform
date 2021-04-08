@@ -1,0 +1,105 @@
+{
+  "id": "32a5d8a8bbdf97322177f0006f19740e",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.7.5",
+  "solcLongVersion": "0.7.5+commit.eb77ed08",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/dependencies/holyzeppelin/contracts/datatypes/collections/AddressSet.sol": {
+        "content": "// SPDX-License-Identifier: AGPL-3.0-or-later\r\npragma solidity 0.7.5;\r\n\r\n// // import \"./EnumerableSet.sol\";\r\n\r\nlibrary AddressSet {\r\n\r\n//     using EnumerableSet for EnumerableSet.Set;\r\n\r\n//     struct Set {\r\n//         EnumerableSet.Set _inner;\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Add a value to a set. O(1).\r\n//      *\r\n//      * Returns true if the value was added to the set, that is if it was not\r\n//      * already present.\r\n//      */\r\n//     function add(Set storage set, address value) internal returns ( bool ) {\r\n//         return set._inner._add(bytes32(uint256(value)));\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Removes a value from a set. O(1).\r\n//      *\r\n//      * Returns true if the value was removed from the set, that is if it was\r\n//      * present.\r\n//      */\r\n//     function remove(Set storage set, address value) internal returns ( bool ) {\r\n//         return set._inner._remove(bytes32(uint256(value)));\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns true if the value is in the set. O(1).\r\n//      */\r\n//     function contains(Set storage set, address value) internal view returns ( bool ) {\r\n//         return set._inner._contains(bytes32(uint256(value)));\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the number of values in the set. O(1).\r\n//      */\r\n//     function length(Set storage set) internal view returns ( uint256 ) {\r\n//         return set._inner._length();\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the value stored at position `index` in the set. O(1).\r\n//      *\r\n//      * Note that there are no guarantees on the ordering of values inside the\r\n//      * array, and it may change when more values are added or removed.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - `index` must be strictly less than {length}.\r\n//      */\r\n//     function at(Set storage set, uint256 index) internal view returns ( address ) {\r\n//         return address(uint256(set._inner._at(index)));\r\n//     }\r\n}"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/dependencies/holyzeppelin/contracts/datatypes/collections/AddressSet.sol": {
+        "AddressSet": {
+          "abi": [],
+          "evm": {
+            "bytecode": {
+              "generatedSources": [],
+              "linkReferences": {},
+              "object": "60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220230851e810a4594146e3b0a166fb7cff10cdeb7768e02ee6177f1eb5c046180b64736f6c63430007050033",
+              "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x23 ADDMOD MLOAD 0xE8 LT LOG4 MSIZE COINBASE CHAINID 0xE3 0xB0 LOG1 PUSH7 0xFB7CFF10CDEB77 PUSH9 0xE02EE6177F1EB5C046 XOR SIGNEXTEND PUSH5 0x736F6C6343 STOP SMOD SDIV STOP CALLER ",
+              "sourceMap": "112:1844:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+              "generatedSources": [],
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220230851e810a4594146e3b0a166fb7cff10cdeb7768e02ee6177f1eb5c046180b64736f6c63430007050033",
+              "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x23 ADDMOD MLOAD 0xE8 LT LOG4 MSIZE COINBASE CHAINID 0xE3 0xB0 LOG1 PUSH7 0xFB7CFF10CDEB77 PUSH9 0xE02EE6177F1EB5C046 XOR SIGNEXTEND PUSH5 0x736F6C6343 STOP SMOD SDIV STOP CALLER ",
+              "sourceMap": "112:1844:0:-:0;;;;;;;;"
+            },
+            "methodIdentifiers": {}
+          }
+        }
+      }
+    },
+    "sources": {
+      "contracts/dependencies/holyzeppelin/contracts/datatypes/collections/AddressSet.sol": {
+        "ast": {
+          "absolutePath": "contracts/dependencies/holyzeppelin/contracts/datatypes/collections/AddressSet.sol",
+          "exportedSymbols": {
+            "AddressSet": [
+              2
+            ]
+          },
+          "id": 3,
+          "license": "AGPL-3.0-or-later",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                "0.7",
+                ".5"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "47:22:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "contractDependencies": [],
+              "contractKind": "library",
+              "fullyImplemented": true,
+              "id": 2,
+              "linearizedBaseContracts": [
+                2
+              ],
+              "name": "AddressSet",
+              "nodeType": "ContractDefinition",
+              "nodes": [],
+              "scope": 3,
+              "src": "112:1844:0"
+            }
+          ],
+          "src": "47:1909:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "UniswapV2Library",
+  "sourceName": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/protocols/exchanges/uniswap/v2/periphery/libraries/UniswapV2Library.sol",
+  "abi": [],
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122068d3a630e0f3830588d21ed7cfe16917c07556d11a77eeaf00ff9dac0626c59164736f6c63430007050033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122068d3a630e0f3830588d21ed7cfe16917c07556d11a77eeaf00ff9dac0626c59164736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

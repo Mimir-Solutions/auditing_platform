@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "BitMath",
+  "sourceName": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/protocols/exchanges/uniswap/libraries/BitMath.sol",
+  "abi": [],
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220fe39742df3742e9da34b48b06df2ed14ba1ad08cb20e9c47f046e282b5c9c16e64736f6c63430007050033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220fe39742df3742e9da34b48b06df2ed14ba1ad08cb20e9c47f046e282b5c9c16e64736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

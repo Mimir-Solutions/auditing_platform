@@ -1,0 +1,114 @@
+{
+  "id": "2c3632ebea222d3157a15fc2405ee5da",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.7.5",
+  "solcLongVersion": "0.7.5+commit.eb77ed08",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/dependencies/holyzeppelin/contracts/security/access/temporal/TimelockController.sol": {
+        "content": "// // SPDX-License-Identifier: AGPL-3.0-or-later\r\npragma solidity 0.7.5;\r\npragma experimental ABIEncoderV2;\r\n\r\n// import \"hardhat/console.sol\";\r\n\r\n// import \"../libraries/math/SafeFullMath.sol\";\r\n// import \"./AccessControl.sol\";\r\n\r\n// /**\r\n//  * @dev Contract module which acts as a timelocked controller. When set as the\r\n//  * owner of an `Ownable` smart contract, it enforces a timelock on all\r\n//  * `onlyOwner` maintenance operations. This gives time for users of the\r\n//  * controlled contract to exit before a potentially dangerous maintenance\r\n//  * operation is applied.\r\n//  *\r\n//  * By default, this contract is self administered, meaning administration tasks\r\n//  * have to go through the timelock process. The proposer (resp executor) role\r\n//  * is in charge of proposing (resp executing) operations. A common use case is\r\n//  * to position this {TimelockController} as the owner of a smart contract, with\r\n//  * a multisig or a DAO as the sole proposer.\r\n//  */\r\ncontract TimelockController \r\n    // is AccessControl \r\n    {\r\n\r\n//     using SafeFullMath for uint256;\r\n\r\n//     bytes32 public constant TIMELOCK_ADMIN_ROLE = keccak256(\"TIMELOCK_ADMIN_ROLE\");\r\n//     bytes32 public constant PROPOSER_ROLE = keccak256(\"PROPOSER_ROLE\");\r\n//     bytes32 public constant EXECUTOR_ROLE = keccak256(\"EXECUTOR_ROLE\");\r\n//     uint256 internal constant _DONE_TIMESTAMP = uint256(1);\r\n\r\n//     mapping(bytes32 => uint256) private _timestamps;\r\n//     uint256 private _minDelay;\r\n\r\n//     /**\r\n//      * @dev Emitted when a call is scheduled as part of operation `id`.\r\n//      */\r\n//     event CallScheduled(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data, bytes32 predecessor, uint256 delay);\r\n\r\n//     /**\r\n//      * @dev Emitted when a call is performed as part of operation `id`.\r\n//      */\r\n//     event CallExecuted(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data);\r\n\r\n//     /**\r\n//      * @dev Emitted when operation `id` is cancelled.\r\n//      */\r\n//     event Cancelled(bytes32 indexed id);\r\n\r\n//     /**\r\n//      * @dev Emitted when the minimum delay for future operations is modified.\r\n//      */\r\n//     event MinDelayChange(uint256 oldDuration, uint256 newDuration);\r\n\r\n//     /**\r\n//      * @dev Initializes the contract with a given `minDelay`.\r\n//      */\r\n//     constructor(uint256 minDelay, address[] memory proposers, address[] memory executors) public {\r\n//         _setRoleAdmin(TIMELOCK_ADMIN_ROLE, TIMELOCK_ADMIN_ROLE);\r\n//         _setRoleAdmin(PROPOSER_ROLE, TIMELOCK_ADMIN_ROLE);\r\n//         _setRoleAdmin(EXECUTOR_ROLE, TIMELOCK_ADMIN_ROLE);\r\n\r\n//         // deployer + self administration\r\n//         _setupRole(TIMELOCK_ADMIN_ROLE, Context._msgSender());\r\n//         _setupRole(TIMELOCK_ADMIN_ROLE, address(this));\r\n\r\n//         // register proposers\r\n//         for (uint256 i = 0; i < proposers.length; ++i) {\r\n//             _setupRole(PROPOSER_ROLE, proposers[i]);\r\n//         }\r\n\r\n//         // register executors\r\n//         for (uint256 i = 0; i < executors.length; ++i) {\r\n//             _setupRole(EXECUTOR_ROLE, executors[i]);\r\n//         }\r\n\r\n//         _minDelay = minDelay;\r\n//         emit MinDelayChange(0, minDelay);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Modifier to make a function callable only by a certain role. In\r\n//      * addition to checking the sender's role, `address(0)` 's role is also\r\n//      * considered. Granting a role to `address(0)` is equivalent to enabling\r\n//      * this role for everyone.\r\n//      */\r\n//     modifier onlyRole(bytes32 role) {\r\n//         require(hasRole(role, Context._msgSender()) || hasRole(role, address(0)), \"TimelockController: sender requires permission\");\r\n//         _;\r\n//     }\r\n\r\n//     /*\r\n//      * @dev Contract might receive/hold ETH as part of the maintenance process.\r\n//      */\r\n//     receive() external payable {}\r\n\r\n//     /**\r\n//      * @dev Returns whether an operation is pending or not.\r\n//      */\r\n//     function isOperationPending(bytes32 id) public view returns (bool pending) {\r\n//         return _timestamps[id] > _DONE_TIMESTAMP;\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns whether an operation is ready or not.\r\n//      */\r\n//     function isOperationReady(bytes32 id) public view returns (bool ready) {\r\n//         // solhint-disable-next-line not-rely-on-time\r\n//         return _timestamps[id] > _DONE_TIMESTAMP && _timestamps[id] <= block.timestamp;\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns whether an operation is done or not.\r\n//      */\r\n//     function isOperationDone(bytes32 id) public view returns (bool done) {\r\n//         return _timestamps[id] == _DONE_TIMESTAMP;\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the timestamp at with an operation becomes ready (0 for\r\n//      * unset operations, 1 for done operations).\r\n//      */\r\n//     function getTimestamp(bytes32 id) public view returns (uint256 timestamp) {\r\n//         return _timestamps[id];\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the minimum delay for an operation to become valid.\r\n//      */\r\n//     function getMinDelay() public view returns (uint256 duration) {\r\n//         return _minDelay;\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the identifier of an operation containing a single\r\n//      * transaction.\r\n//      */\r\n//     function hashOperation(address target, uint256 value, bytes calldata data, bytes32 predecessor, bytes32 salt) public pure returns (bytes32 hash) {\r\n//         return keccak256(abi.encode(target, value, data, predecessor, salt));\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the identifier of an operation containing a batch of\r\n//      * transactions.\r\n//      */\r\n//     function hashOperationBatch(address[] calldata targets, uint256[] calldata values, bytes[] calldata datas, bytes32 predecessor, bytes32 salt) public pure returns (bytes32 hash) {\r\n//         return keccak256(abi.encode(targets, values, datas, predecessor, salt));\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Schedule an operation containing a single transaction.\r\n//      *\r\n//      * Emits a {CallScheduled} event.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - the caller must have the 'proposer' role.\r\n//      */\r\n//     function schedule(address target, uint256 value, bytes calldata data, bytes32 predecessor, bytes32 salt, uint256 delay) public virtual onlyRole(PROPOSER_ROLE) {\r\n//         bytes32 id = hashOperation(target, value, data, predecessor, salt);\r\n//         _schedule(id, delay);\r\n//         emit CallScheduled(id, 0, target, value, data, predecessor, delay);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Schedule an operation containing a batch of transactions.\r\n//      *\r\n//      * Emits one {CallScheduled} event per transaction in the batch.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - the caller must have the 'proposer' role.\r\n//      */\r\n//     function scheduleBatch(address[] calldata targets, uint256[] calldata values, bytes[] calldata datas, bytes32 predecessor, bytes32 salt, uint256 delay) public virtual onlyRole(PROPOSER_ROLE) {\r\n//         require(targets.length == values.length, \"TimelockController: length mismatch\");\r\n//         require(targets.length == datas.length, \"TimelockController: length mismatch\");\r\n\r\n//         bytes32 id = hashOperationBatch(targets, values, datas, predecessor, salt);\r\n//         _schedule(id, delay);\r\n//         for (uint256 i = 0; i < targets.length; ++i) {\r\n//             emit CallScheduled(id, i, targets[i], values[i], datas[i], predecessor, delay);\r\n//         }\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Schedule an operation that is to becomes valid after a given delay.\r\n//      */\r\n//     function _schedule(bytes32 id, uint256 delay) private {\r\n//         require(_timestamps[id] == 0, \"TimelockController: operation already scheduled\");\r\n//         require(delay >= _minDelay, \"TimelockController: insufficient delay\");\r\n//         // solhint-disable-next-line not-rely-on-time\r\n//         _timestamps[id] = SafeFullMath.add(block.timestamp, delay);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Cancel an operation.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - the caller must have the 'proposer' role.\r\n//      */\r\n//     function cancel(bytes32 id) public virtual onlyRole(PROPOSER_ROLE) {\r\n//         require(isOperationPending(id), \"TimelockController: operation cannot be cancelled\");\r\n//         delete _timestamps[id];\r\n\r\n//         emit Cancelled(id);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Execute an (ready) operation containing a single transaction.\r\n//      *\r\n//      * Emits a {CallExecuted} event.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - the caller must have the 'executor' role.\r\n//      */\r\n//     function execute(address target, uint256 value, bytes calldata data, bytes32 predecessor, bytes32 salt) public payable virtual onlyRole(EXECUTOR_ROLE) {\r\n//         bytes32 id = hashOperation(target, value, data, predecessor, salt);\r\n//         _beforeCall(predecessor);\r\n//         _call(id, 0, target, value, data);\r\n//         _afterCall(id);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Execute an (ready) operation containing a batch of transactions.\r\n//      *\r\n//      * Emits one {CallExecuted} event per transaction in the batch.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - the caller must have the 'executor' role.\r\n//      */\r\n//     function executeBatch(address[] calldata targets, uint256[] calldata values, bytes[] calldata datas, bytes32 predecessor, bytes32 salt) public payable virtual onlyRole(EXECUTOR_ROLE) {\r\n//         require(targets.length == values.length, \"TimelockController: length mismatch\");\r\n//         require(targets.length == datas.length, \"TimelockController: length mismatch\");\r\n\r\n//         bytes32 id = hashOperationBatch(targets, values, datas, predecessor, salt);\r\n//         _beforeCall(predecessor);\r\n//         for (uint256 i = 0; i < targets.length; ++i) {\r\n//             _call(id, i, targets[i], values[i], datas[i]);\r\n//         }\r\n//         _afterCall(id);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Checks before execution of an operation's calls.\r\n//      */\r\n//     function _beforeCall(bytes32 predecessor) private view {\r\n//         require(predecessor == bytes32(0) || isOperationDone(predecessor), \"TimelockController: missing dependency\");\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Checks after execution of an operation's calls.\r\n//      */\r\n//     function _afterCall(bytes32 id) private {\r\n//         require(isOperationReady(id), \"TimelockController: operation is not ready\");\r\n//         _timestamps[id] = _DONE_TIMESTAMP;\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Execute an operation's call.\r\n//      *\r\n//      * Emits a {CallExecuted} event.\r\n//      */\r\n//     function _call(bytes32 id, uint256 index, address target, uint256 value, bytes calldata data) private {\r\n//         // solhint-disable-next-line avoid-low-level-calls\r\n//         (bool success,) = target.call{value: value}(data);\r\n//         require(success, \"TimelockController: underlying transaction reverted\");\r\n\r\n//         emit CallExecuted(id, index, target, value, data);\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Changes the timelock duration for future operations.\r\n//      *\r\n//      * Emits a {MinDelayChange} event.\r\n//      */\r\n//     function updateDelay(uint256 newDelay) external virtual {\r\n//         require(msg.sender == address(this), \"TimelockController: caller must be timelock\");\r\n//         emit MinDelayChange(_minDelay, newDelay);\r\n//         _minDelay = newDelay;\r\n//     }\r\n}"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/dependencies/holyzeppelin/contracts/security/access/temporal/TimelockController.sol": {
+        "TimelockController": {
+          "abi": [],
+          "evm": {
+            "bytecode": {
+              "generatedSources": [],
+              "linkReferences": {},
+              "object": "6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212203ecf0318f2fca2a90a9bb838d278cbb8b54c9fa2d7c15a6d59a42d1301a121d464736f6c63430007050033",
+              "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x3F DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 RETURNDATACOPY 0xCF SUB XOR CALLCODE 0xFC LOG2 0xA9 EXP SWAP12 0xB8 CODESIZE 0xD2 PUSH25 0xCBB8B54C9FA2D7C15A6D59A42D1301A121D464736F6C634300 SMOD SDIV STOP CALLER ",
+              "sourceMap": "978:10624:0:-:0;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+              "generatedSources": [],
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "6080604052600080fdfea26469706673582212203ecf0318f2fca2a90a9bb838d278cbb8b54c9fa2d7c15a6d59a42d1301a121d464736f6c63430007050033",
+              "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 RETURNDATACOPY 0xCF SUB XOR CALLCODE 0xFC LOG2 0xA9 EXP SWAP12 0xB8 CODESIZE 0xD2 PUSH25 0xCBB8B54C9FA2D7C15A6D59A42D1301A121D464736F6C634300 SMOD SDIV STOP CALLER ",
+              "sourceMap": "978:10624:0:-:0;;;;;"
+            },
+            "methodIdentifiers": {}
+          }
+        }
+      }
+    },
+    "sources": {
+      "contracts/dependencies/holyzeppelin/contracts/security/access/temporal/TimelockController.sol": {
+        "ast": {
+          "absolutePath": "contracts/dependencies/holyzeppelin/contracts/security/access/temporal/TimelockController.sol",
+          "exportedSymbols": {
+            "TimelockController": [
+              3
+            ]
+          },
+          "id": 4,
+          "license": "AGPL-3.0-or-later",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                "0.7",
+                ".5"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "50:22:0"
+            },
+            {
+              "id": 2,
+              "literals": [
+                "experimental",
+                "ABIEncoderV2"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "74:33:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "contractDependencies": [],
+              "contractKind": "contract",
+              "fullyImplemented": true,
+              "id": 3,
+              "linearizedBaseContracts": [
+                3
+              ],
+              "name": "TimelockController",
+              "nodeType": "ContractDefinition",
+              "nodes": [],
+              "scope": 4,
+              "src": "978:10624:0"
+            }
+          ],
+          "src": "50:11552:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}

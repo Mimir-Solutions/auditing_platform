@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "TransferHelper",
+  "sourceName": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/protocols/exchanges/uniswap/libraries/TransferHelper.sol",
+  "abi": [],
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212203a56082c8cc8aee5006ed730998410b9b1263193369f2cbceb1515d356034a4a64736f6c63430007050033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212203a56082c8cc8aee5006ed730998410b9b1263193369f2cbceb1515d356034a4a64736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "TestAll",
+  "sourceName": "contracts/wip/solidity-standard-library/testAll.sol",
+  "abi": [],
+  "bytecode": "0x608060405260026000556064600155348015601957600080fd5b50603f8060276000396000f3fe6080604052600080fdfea264697066735822122053926c6d15e1922558733315d7c8c59119ac9a0b7afda01fa256401f2aff353d64736f6c63430007050033",
+  "deployedBytecode": "0x6080604052600080fdfea264697066735822122053926c6d15e1922558733315d7c8c59119ac9a0b7afda01fa256401f2aff353d64736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

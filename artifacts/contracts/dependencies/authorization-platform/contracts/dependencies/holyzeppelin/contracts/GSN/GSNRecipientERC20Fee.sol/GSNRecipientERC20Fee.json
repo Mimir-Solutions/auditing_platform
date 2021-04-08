@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "GSNRecipientERC20Fee",
+  "sourceName": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/GSN/GSNRecipientERC20Fee.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea264697066735822122009b9d2f4a89e311b1022c3630f73c73690926602772e61a82121db85825112ce64736f6c63430007050033",
+  "deployedBytecode": "0x6080604052600080fdfea264697066735822122009b9d2f4a89e311b1022c3630f73c73690926602772e61a82121db85825112ce64736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

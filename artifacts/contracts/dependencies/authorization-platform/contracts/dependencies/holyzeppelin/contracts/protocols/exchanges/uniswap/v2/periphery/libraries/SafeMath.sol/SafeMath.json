@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "SafeMath",
+  "sourceName": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/protocols/exchanges/uniswap/v2/periphery/libraries/SafeMath.sol",
+  "abi": [],
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122088e0ca87b48d9b500a7c2eebcce0a2638f0fcd885b1a18d60906b861cb31df4564736f6c63430007050033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122088e0ca87b48d9b500a7c2eebcce0a2638f0fcd885b1a18d60906b861cb31df4564736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

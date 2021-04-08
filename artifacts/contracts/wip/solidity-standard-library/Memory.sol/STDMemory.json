@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "STDMemory",
+  "sourceName": "contracts/wip/solidity-standard-library/Memory.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220280f92b93ec80e0ba806e1ff2be260fdab4ecd22397dfa94a56a31c1281123dd64736f6c63430007050033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220280f92b93ec80e0ba806e1ff2be260fdab4ecd22397dfa94a56a31c1281123dd64736f6c63430007050033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

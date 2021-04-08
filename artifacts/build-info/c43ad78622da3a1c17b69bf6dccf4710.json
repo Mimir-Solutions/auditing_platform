@@ -1,0 +1,105 @@
+{
+  "id": "c43ad78622da3a1c17b69bf6dccf4710",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.7.5",
+  "solcLongVersion": "0.7.5+commit.eb77ed08",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/security/access/temporal/Timelock.sol": {
+        "content": "// COPIED FROM https://github.com/compound-finance/compound-protocol/blob/master/contracts/Governance/GovernorAlpha.sol\r\n// Copyright 2020 Compound Labs, Inc.\r\n// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\r\n// 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\r\n// 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\r\n// 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\r\n// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\r\n//\r\n// Ctrl+f for XXX to see all the modifications.\r\n// SPDX-License-Identifier: MIT\r\n// XXX: pragma solidity 0.7.5;\r\npragma solidity 0.7.5;\r\n\r\n// // XXX: import \"./SafeMath.sol\";\r\n// import \"@openzeppelin/contracts/math/SafeMath.sol\";\r\n\r\ncontract Timelock {\r\n//     using SafeMath for uint;\r\n\r\n//     event NewAdmin(address indexed newAdmin);\r\n//     event NewPendingAdmin(address indexed newPendingAdmin);\r\n//     event NewDelay(uint indexed newDelay);\r\n//     event CancelTransaction(bytes32 indexed txHash, address indexed target, uint value, string signature,  bytes data, uint eta);\r\n//     event ExecuteTransaction(bytes32 indexed txHash, address indexed target, uint value, string signature,  bytes data, uint eta);\r\n//     event QueueTransaction(bytes32 indexed txHash, address indexed target, uint value, string signature, bytes data, uint eta);\r\n\r\n//     uint public constant GRACE_PERIOD = 14 days;\r\n//     uint public constant MINIMUM_DELAY = 2 days;\r\n//     uint public constant MAXIMUM_DELAY = 30 days;\r\n\r\n//     address public admin;\r\n//     address public pendingAdmin;\r\n//     uint public delay;\r\n//     bool public admin_initialized;\r\n\r\n//     mapping (bytes32 => bool) public queuedTransactions;\r\n\r\n\r\n//     constructor(address admin_, uint delay_) public {\r\n//         require(delay_ >= MINIMUM_DELAY, \"Timelock::constructor: Delay must exceed minimum delay.\");\r\n//         require(delay_ <= MAXIMUM_DELAY, \"Timelock::constructor: Delay must not exceed maximum delay.\");\r\n\r\n//         admin = admin_;\r\n//         delay = delay_;\r\n//         admin_initialized = false;\r\n//     }\r\n\r\n//     // XXX: fallback() external payable { }\r\n//     receive() external payable { }\r\n\r\n//     function setDelay(uint delay_) public {\r\n//         require(msg.sender == address(this), \"Timelock::setDelay: Call must come from Timelock.\");\r\n//         require(delay_ >= MINIMUM_DELAY, \"Timelock::setDelay: Delay must exceed minimum delay.\");\r\n//         require(delay_ <= MAXIMUM_DELAY, \"Timelock::setDelay: Delay must not exceed maximum delay.\");\r\n//         delay = delay_;\r\n\r\n//         emit NewDelay(delay);\r\n//     }\r\n\r\n//     function acceptAdmin() public {\r\n//         require(msg.sender == pendingAdmin, \"Timelock::acceptAdmin: Call must come from pendingAdmin.\");\r\n//         admin = msg.sender;\r\n//         pendingAdmin = address(0);\r\n\r\n//         emit NewAdmin(admin);\r\n//     }\r\n\r\n//     function setPendingAdmin(address pendingAdmin_) public {\r\n//         // allows one time setting of admin for deployment purposes\r\n//         if (admin_initialized) {\r\n//             require(msg.sender == address(this), \"Timelock::setPendingAdmin: Call must come from Timelock.\");\r\n//         } else {\r\n//             require(msg.sender == admin, \"Timelock::setPendingAdmin: First call must come from admin.\");\r\n//             admin_initialized = true;\r\n//         }\r\n//         pendingAdmin = pendingAdmin_;\r\n\r\n//         emit NewPendingAdmin(pendingAdmin);\r\n//     }\r\n\r\n//     function queueTransaction(address target, uint value, string memory signature, bytes memory data, uint eta) public returns (bytes32) {\r\n//         require(msg.sender == admin, \"Timelock::queueTransaction: Call must come from admin.\");\r\n//         require(eta >= getBlockTimestamp().add(delay), \"Timelock::queueTransaction: Estimated execution block must satisfy delay.\");\r\n\r\n//         bytes32 txHash = keccak256(abi.encode(target, value, signature, data, eta));\r\n//         queuedTransactions[txHash] = true;\r\n\r\n//         emit QueueTransaction(txHash, target, value, signature, data, eta);\r\n//         return txHash;\r\n//     }\r\n\r\n//     function cancelTransaction(address target, uint value, string memory signature, bytes memory data, uint eta) public {\r\n//         require(msg.sender == admin, \"Timelock::cancelTransaction: Call must come from admin.\");\r\n\r\n//         bytes32 txHash = keccak256(abi.encode(target, value, signature, data, eta));\r\n//         queuedTransactions[txHash] = false;\r\n\r\n//         emit CancelTransaction(txHash, target, value, signature, data, eta);\r\n//     }\r\n\r\n//     function executeTransaction(address target, uint value, string memory signature, bytes memory data, uint eta) public payable returns (bytes memory) {\r\n//         require(msg.sender == admin, \"Timelock::executeTransaction: Call must come from admin.\");\r\n\r\n//         bytes32 txHash = keccak256(abi.encode(target, value, signature, data, eta));\r\n//         require(queuedTransactions[txHash], \"Timelock::executeTransaction: Transaction hasn't been queued.\");\r\n//         require(getBlockTimestamp() >= eta, \"Timelock::executeTransaction: Transaction hasn't surpassed time lock.\");\r\n//         require(getBlockTimestamp() <= eta.add(GRACE_PERIOD), \"Timelock::executeTransaction: Transaction is stale.\");\r\n\r\n//         queuedTransactions[txHash] = false;\r\n\r\n//         bytes memory callData;\r\n\r\n//         if (bytes(signature).length == 0) {\r\n//             callData = data;\r\n//         } else {\r\n//             callData = abi.encodePacked(bytes4(keccak256(bytes(signature))), data);\r\n//         }\r\n\r\n//         // solium-disable-next-line security/no-call-value\r\n//         (bool success, bytes memory returnData) = target.call.value(value)(callData);\r\n//         require(success, \"Timelock::executeTransaction: Transaction execution reverted.\");\r\n\r\n//         emit ExecuteTransaction(txHash, target, value, signature, data, eta);\r\n\r\n//         return returnData;\r\n//     }\r\n\r\n//     function getBlockTimestamp() internal view returns (uint) {\r\n//         // solium-disable-next-line security/no-block-members\r\n//         return block.timestamp;\r\n//     }\r\n}"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/security/access/temporal/Timelock.sol": {
+        "Timelock": {
+          "abi": [],
+          "evm": {
+            "bytecode": {
+              "generatedSources": [],
+              "linkReferences": {},
+              "object": "6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220c9ddc475f78b5588a8c8224bd21e0ac76a5984685e5fd99be609214b5be4e4fb64736f6c63430007050033",
+              "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x3F DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xC9 0xDD 0xC4 PUSH22 0xF78B5588A8C8224BD21E0AC76A5984685E5FD99BE609 0x21 0x4B JUMPDEST 0xE4 0xE4 0xFB PUSH5 0x736F6C6343 STOP SMOD SDIV STOP CALLER ",
+              "sourceMap": "1843:5395:0:-:0;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+              "generatedSources": [],
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "6080604052600080fdfea2646970667358221220c9ddc475f78b5588a8c8224bd21e0ac76a5984685e5fd99be609214b5be4e4fb64736f6c63430007050033",
+              "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xC9 0xDD 0xC4 PUSH22 0xF78B5588A8C8224BD21E0AC76A5984685E5FD99BE609 0x21 0x4B JUMPDEST 0xE4 0xE4 0xFB PUSH5 0x736F6C6343 STOP SMOD SDIV STOP CALLER ",
+              "sourceMap": "1843:5395:0:-:0;;;;;"
+            },
+            "methodIdentifiers": {}
+          }
+        }
+      }
+    },
+    "sources": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/security/access/temporal/Timelock.sol": {
+        "ast": {
+          "absolutePath": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/security/access/temporal/Timelock.sol",
+          "exportedSymbols": {
+            "Timelock": [
+              2
+            ]
+          },
+          "id": 3,
+          "license": "MIT",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                "0.7",
+                ".5"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "1722:22:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "contractDependencies": [],
+              "contractKind": "contract",
+              "fullyImplemented": true,
+              "id": 2,
+              "linearizedBaseContracts": [
+                2
+              ],
+              "name": "Timelock",
+              "nodeType": "ContractDefinition",
+              "nodes": [],
+              "scope": 3,
+              "src": "1843:5395:0"
+            }
+          ],
+          "src": "1722:5516:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}

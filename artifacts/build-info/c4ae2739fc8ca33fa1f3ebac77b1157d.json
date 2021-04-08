@@ -1,0 +1,105 @@
+{
+  "id": "c4ae2739fc8ca33fa1f3ebac77b1157d",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.7.5",
+  "solcLongVersion": "0.7.5+commit.eb77ed08",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/datatypes/primitives/SignedSafeMath.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity 0.7.5;\r\n\r\n// /**\r\n//  * @title SignedSafeMath\r\n//  * @dev Signed math operations with safety checks that revert on error.\r\n//  */\r\n//  // TODO Needs to be decomposed into intelligent primitive autoboxers.\r\n//  // TODO needs versions for int4, int8, int16, int32, int64, int128, int256.\r\nlibrary SignedSafeMath {\r\n//     int256 constant private _INT256_MIN = -2**255;\r\n\r\n//     /**\r\n//      * @dev Returns the multiplication of two signed integers, reverting on\r\n//      * overflow.\r\n//      *\r\n//      * Counterpart to Solidity's `*` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - Multiplication cannot overflow.\r\n//      */\r\n//     function mul(int256 a, int256 b) internal pure returns (int256) {\r\n//         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the\r\n//         // benefit is lost if 'b' is also tested.\r\n//         // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522\r\n//         if (a == 0) {\r\n//             return 0;\r\n//         }\r\n\r\n//         require(!(a == -1 && b == _INT256_MIN), \"SignedSafeMath: multiplication overflow\");\r\n\r\n//         int256 c = a * b;\r\n//         require(c / a == b, \"SignedSafeMath: multiplication overflow\");\r\n\r\n//         return c;\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the integer division of two signed integers. Reverts on\r\n//      * division by zero. The result is rounded towards zero.\r\n//      *\r\n//      * Counterpart to Solidity's `/` operator. Note: this function uses a\r\n//      * `revert` opcode (which leaves remaining gas untouched) while Solidity\r\n//      * uses an invalid opcode to revert (consuming all remaining gas).\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - The divisor cannot be zero.\r\n//      */\r\n//     function div(int256 a, int256 b) internal pure returns (int256) {\r\n//         require(b != 0, \"SignedSafeMath: division by zero\");\r\n//         require(!(b == -1 && a == _INT256_MIN), \"SignedSafeMath: division overflow\");\r\n\r\n//         int256 c = a / b;\r\n\r\n//         return c;\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the subtraction of two signed integers, reverting on\r\n//      * overflow.\r\n//      *\r\n//      * Counterpart to Solidity's `-` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - Subtraction cannot overflow.\r\n//      */\r\n//     function sub(int256 a, int256 b) internal pure returns (int256) {\r\n//         int256 c = a - b;\r\n//         require((b >= 0 && c <= a) || (b < 0 && c > a), \"SignedSafeMath: subtraction overflow\");\r\n\r\n//         return c;\r\n//     }\r\n\r\n//     /**\r\n//      * @dev Returns the addition of two signed integers, reverting on\r\n//      * overflow.\r\n//      *\r\n//      * Counterpart to Solidity's `+` operator.\r\n//      *\r\n//      * Requirements:\r\n//      *\r\n//      * - Addition cannot overflow.\r\n//      */\r\n//     function add(int256 a, int256 b) internal pure returns (int256) {\r\n//         int256 c = a + b;\r\n//         require((b >= 0 && c >= a) || (b < 0 && c < a), \"SignedSafeMath: addition overflow\");\r\n\r\n//         return c;\r\n//     }\r\n}"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/datatypes/primitives/SignedSafeMath.sol": {
+        "SignedSafeMath": {
+          "abi": [],
+          "evm": {
+            "bytecode": {
+              "generatedSources": [],
+              "linkReferences": {},
+              "object": "60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220f92c39633f828826d75ca48666e84a885a4465cb391fa069731b59699d8cf9bd64736f6c63430007050033",
+              "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xF9 0x2C CODECOPY PUSH4 0x3F828826 0xD7 0x5C LOG4 DUP7 PUSH7 0xE84A885A4465CB CODECOPY 0x1F LOG0 PUSH10 0x731B59699D8CF9BD6473 PUSH16 0x6C634300070500330000000000000000 ",
+              "sourceMap": "336:2791:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+              "generatedSources": [],
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220f92c39633f828826d75ca48666e84a885a4465cb391fa069731b59699d8cf9bd64736f6c63430007050033",
+              "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xF9 0x2C CODECOPY PUSH4 0x3F828826 0xD7 0x5C LOG4 DUP7 PUSH7 0xE84A885A4465CB CODECOPY 0x1F LOG0 PUSH10 0x731B59699D8CF9BD6473 PUSH16 0x6C634300070500330000000000000000 ",
+              "sourceMap": "336:2791:0:-:0;;;;;;;;"
+            },
+            "methodIdentifiers": {}
+          }
+        }
+      }
+    },
+    "sources": {
+      "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/datatypes/primitives/SignedSafeMath.sol": {
+        "ast": {
+          "absolutePath": "contracts/dependencies/authorization-platform/contracts/dependencies/holyzeppelin/contracts/datatypes/primitives/SignedSafeMath.sol",
+          "exportedSymbols": {
+            "SignedSafeMath": [
+              2
+            ]
+          },
+          "id": 3,
+          "license": "MIT",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                "0.7",
+                ".5"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "33:22:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "contractDependencies": [],
+              "contractKind": "library",
+              "fullyImplemented": true,
+              "id": 2,
+              "linearizedBaseContracts": [
+                2
+              ],
+              "name": "SignedSafeMath",
+              "nodeType": "ContractDefinition",
+              "nodes": [],
+              "scope": 3,
+              "src": "336:2791:0"
+            }
+          ],
+          "src": "33:3094:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}
